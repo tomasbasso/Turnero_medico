@@ -1,0 +1,93 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  name      String
+  role      Role     @default(RECEPTIONIST)
+  isActive  Boolean  @default(true)
+  doctorId  Int?     @unique
+  doctor    Doctor?  @relation(fields: [doctorId], references: [id])
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  updatedAt DateTime @updatedAt @db.Timestamp(6)
+}
+
+model Specialty {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  description String?
+  color       String   @default("#0d9488")
+  isActive    Boolean  @default(true)
+  doctors     Doctor[]
+  createdAt   DateTime @default(now()) @db.Timestamp(6)
+}
+
+model Doctor {
+  id             Int            @id @default(autoincrement())
+  name           String
+  specialtyId    Int
+  specialty      Specialty      @relation(fields: [specialtyId], references: [id])
+  avatar         String?
+  bio            String?
+  phone          String?
+  durationMin    Int            @default(20)
+  isActive       Boolean        @default(true)
+  availabilities Availability[]
+  appointments   Appointment[]
+  user           User?
+  createdAt      DateTime       @default(now()) @db.Timestamp(6)
+  updatedAt      DateTime       @updatedAt @db.Timestamp(6)
+}
+
+model Availability {
+  id        Int    @id @default(autoincrement())
+  doctorId  Int
+  doctor    Doctor @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  dayOfWeek Int
+  startTime String
+  endTime   String
+}
+
+model Appointment {
+  id           Int               @id @default(autoincrement())
+  doctorId     Int
+  doctor       Doctor            @relation(fields: [doctorId], references: [id])
+  patientName  String
+  patientDni   String
+  patientPhone String
+  patientEmail String?
+  date         DateTime          @db.Date
+  time         String
+  status       AppointmentStatus @default(PENDING)
+  notes        String?
+  whatsappSent Boolean           @default(false)
+  createdAt    DateTime          @default(now()) @db.Timestamp(6)
+  updatedAt    DateTime          @updatedAt @db.Timestamp(6)
+
+  @@unique([doctorId, date, time])
+  @@index([patientDni])
+  @@index([date])
+  @@index([status])
+}
+
+enum Role {
+  ADMIN
+  DOCTOR
+  RECEPTIONIST
+}
+
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
