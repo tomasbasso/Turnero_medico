@@ -40,7 +40,16 @@ Plans:
   3. Admin puede crear, editar y eliminar m√©dicos con avatar (upload a Supabase Storage)
   4. Admin puede configurar la disponibilidad semanal de cada m√©dico
   5. Todas las operaciones tienen feedback visual (loading, success, error)
-**Plans**: TBD
+**Plans**: 7 plans
+
+Plans:
+- [ ] 02-01-PLAN.md ó Foundation: getWeekRange, requireAdmin helper, Drawer component, sidebar py-3 fix
+- [ ] 02-02-PLAN.md ó Dashboard: real Server Component with groupBy, 4 StatCards for current week
+- [ ] 02-03-PLAN.md ó Specialties API: GET list, POST create, PUT update, DELETE soft-delete
+- [ ] 02-04-PLAN.md ó Doctors API + Availability API: CRUD doctors, full-replace availability transaction
+- [ ] 02-05-PLAN.md ó Specialties UI: list page + Drawer + SpecialtyForm + inline delete confirm
+- [ ] 02-06-PLAN.md ó Doctors UI: list page + Drawer + DoctorForm with avatar upload
+- [ ] 02-07-PLAN.md ó Availability Editor UI: availability page + AvailabilityEditor with 7-day ranges
 
 ### Phase 3: Reserva Paciente
 **Goal**: Paciente puede reservar un turno v√≠a wizard p√∫blico de 5 pasos sin necesidad de registro.
@@ -50,7 +59,16 @@ Plans:
   2. Slots se generan din√°micamente seg√∫n disponibilidad del m√©dico
   3. No se puede reservar un slot ya ocupado (bloqueo de doble turno)
   4. Turno queda en estado PENDING en la base de datos
-**Plans**: TBD
+**Plans**: 7 plans
+
+Plans:
+- [ ] 02-01-PLAN.md ó Foundation: getWeekRange, requireAdmin helper, Drawer component, sidebar py-3 fix
+- [ ] 02-02-PLAN.md ó Dashboard: real Server Component with groupBy, 4 StatCards for current week
+- [ ] 02-03-PLAN.md ó Specialties API: GET list, POST create, PUT update, DELETE soft-delete
+- [ ] 02-04-PLAN.md ó Doctors API + Availability API: CRUD doctors, full-replace availability transaction
+- [ ] 02-05-PLAN.md ó Specialties UI: list page + Drawer + SpecialtyForm + inline delete confirm
+- [ ] 02-06-PLAN.md ó Doctors UI: list page + Drawer + DoctorForm with avatar upload
+- [ ] 02-07-PLAN.md ó Availability Editor UI: availability page + AvailabilityEditor with 7-day ranges
 
 ### Phase 4: Gesti√≥n de Turnos
 **Goal**: El equipo puede ver, filtrar y gestionar el estado de todos los turnos.
@@ -60,7 +78,16 @@ Plans:
   2. Admin puede cambiar estado de turno (PENDING ‚Üí CONFIRMED / CANCELLED / COMPLETED)
   3. B√∫squeda de paciente por DNI
   4. Env√≠o de mensaje WhatsApp al confirmar (link wa.me)
-**Plans**: TBD
+**Plans**: 7 plans
+
+Plans:
+- [ ] 02-01-PLAN.md ó Foundation: getWeekRange, requireAdmin helper, Drawer component, sidebar py-3 fix
+- [ ] 02-02-PLAN.md ó Dashboard: real Server Component with groupBy, 4 StatCards for current week
+- [ ] 02-03-PLAN.md ó Specialties API: GET list, POST create, PUT update, DELETE soft-delete
+- [ ] 02-04-PLAN.md ó Doctors API + Availability API: CRUD doctors, full-replace availability transaction
+- [ ] 02-05-PLAN.md ó Specialties UI: list page + Drawer + SpecialtyForm + inline delete confirm
+- [ ] 02-06-PLAN.md ó Doctors UI: list page + Drawer + DoctorForm with avatar upload
+- [ ] 02-07-PLAN.md ó Availability Editor UI: availability page + AvailabilityEditor with 7-day ranges
 
 ### Phase 5: Pulido y Deploy
 **Goal**: App production-ready: accesibilidad, seguridad b√°sica y desplegada en Vercel + Supabase.
@@ -70,7 +97,16 @@ Plans:
   2. Contraste WCAG AA en todos los componentes
   3. Rate limiting en endpoints cr√≠ticos (login, reserva)
   4. App desplegada y accesible en Vercel
-**Plans**: TBD
+**Plans**: 7 plans
+
+Plans:
+- [ ] 02-01-PLAN.md ó Foundation: getWeekRange, requireAdmin helper, Drawer component, sidebar py-3 fix
+- [ ] 02-02-PLAN.md ó Dashboard: real Server Component with groupBy, 4 StatCards for current week
+- [ ] 02-03-PLAN.md ó Specialties API: GET list, POST create, PUT update, DELETE soft-delete
+- [ ] 02-04-PLAN.md ó Doctors API + Availability API: CRUD doctors, full-replace availability transaction
+- [ ] 02-05-PLAN.md ó Specialties UI: list page + Drawer + SpecialtyForm + inline delete confirm
+- [ ] 02-06-PLAN.md ó Doctors UI: list page + Drawer + DoctorForm with avatar upload
+- [ ] 02-07-PLAN.md ó Availability Editor UI: availability page + AvailabilityEditor with 7-day ranges
 
 ## Progress
 
