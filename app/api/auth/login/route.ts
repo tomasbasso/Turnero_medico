@@ -1,4 +1,4 @@
-import { NextRequest } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { comparePassword, signToken, cookieOptions } from '@/lib/auth'
 import type { JWTPayload } from '@/lib/auth'
@@ -35,14 +35,19 @@ export async function POST(request: NextRequest) {
 
   const token = signToken(payload)
 
-  const response = Response.json({
+  const response = NextResponse.json({
     user: { id: user.id, name: user.name, email: user.email, role: user.role },
   })
 
-  response.headers.set(
-    'Set-Cookie',
-    `${cookieOptions.name}=${token}; Max-Age=${cookieOptions.maxAge}; Path=${cookieOptions.path}; HttpOnly; SameSite=${cookieOptions.sameSite}${cookieOptions.secure ? '; Secure' : ''}`,
-  )
+  response.cookies.set({
+    name: cookieOptions.name,
+    value: token,
+    maxAge: cookieOptions.maxAge,
+    httpOnly: cookieOptions.httpOnly,
+    secure: cookieOptions.secure,
+    sameSite: cookieOptions.sameSite,
+    path: cookieOptions.path,
+  })
 
   return response
 }
