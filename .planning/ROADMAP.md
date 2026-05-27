@@ -50,22 +50,22 @@ Plans:
 Plans:
 **Wave 1**
 
-- [ ] 02-01-PLAN.md � Foundation: getWeekRange, requireAdmin helper, Drawer component, sidebar py-3 fix
+- [x] 02-01-PLAN.md — Foundation: getWeekRange, requireAdmin helper, Drawer component, sidebar py-3 fix
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
-- [ ] 02-02-PLAN.md � Dashboard: real Server Component with groupBy, 4 StatCards for current week
-- [ ] 02-03-PLAN.md � Specialties API: GET list, POST create, PUT update, DELETE soft-delete
-- [ ] 02-04-PLAN.md � Doctors API + Availability API: CRUD doctors, full-replace availability transaction
+- [x] 02-02-PLAN.md — Dashboard: real Server Component with groupBy, 4 StatCards for current week
+- [x] 02-03-PLAN.md — Specialties API: GET list, POST create, PUT update, DELETE soft-delete
+- [x] 02-04-PLAN.md — Doctors API + Availability API: CRUD doctors, full-replace availability transaction
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
-- [ ] 02-05-PLAN.md � Specialties UI: list page + Drawer + SpecialtyForm + inline delete confirm
-- [ ] 02-06-PLAN.md � Doctors UI: list page + Drawer + DoctorForm with avatar upload
+- [x] 02-05-PLAN.md — Specialties UI: list page + Drawer + SpecialtyForm + inline delete confirm
+- [x] 02-06-PLAN.md — Doctors UI: list page + Drawer + DoctorForm with avatar upload
 
 **Wave 4** *(blocked on Wave 3 completion)*
 
-- [ ] 02-07-PLAN.md � Availability Editor UI: availability page + AvailabilityEditor with 7-day ranges
+- [x] 02-07-PLAN.md — Availability Editor UI: availability page + AvailabilityEditor with 7-day ranges
 
 ### Phase 3: Reserva Paciente
 

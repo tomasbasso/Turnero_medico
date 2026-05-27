@@ -51,7 +51,7 @@ export function AdminSidebar() {
               key={href}
               href={href}
               className={cn(
-                'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
+                'flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium transition-colors',
                 active
                   ? 'bg-primary/20 text-accent'
                   : 'text-slate-400 hover:bg-slate-800 hover:text-slate-100',
@@ -75,7 +75,7 @@ export function AdminSidebar() {
         </div>
         <button
           onClick={handleLogout}
-          className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-400 transition-colors hover:bg-slate-800 hover:text-error"
+          className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium text-slate-400 transition-colors hover:bg-slate-800 hover:text-error"
         >
           <LogOut className="h-4 w-4" />
           Cerrar sesión

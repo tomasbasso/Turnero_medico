@@ -46,3 +46,16 @@ export const STATUS_COLORS: Record<string, string> = {
   CANCELLED: 'bg-red-100 text-red-700',
   COMPLETED: 'bg-slate-100 text-slate-600',
 }
+
+export function getWeekRange(): { monday: Date; sunday: Date } {
+  const now = new Date()
+  const day = now.getDay() // 0 = Sunday
+  const diff = day === 0 ? -6 : 1 - day
+  const monday = new Date(now)
+  monday.setDate(now.getDate() + diff)
+  monday.setHours(0, 0, 0, 0)
+  const sunday = new Date(monday)
+  sunday.setDate(monday.getDate() + 6)
+  sunday.setHours(23, 59, 59, 999)
+  return { monday, sunday }
+}
