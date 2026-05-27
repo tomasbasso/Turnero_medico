@@ -17,9 +17,11 @@ Stack: Next.js 16 (App Router) + Prisma + PostgreSQL (Supabase) + JWT + Tailwind
 ## Phase Details
 
 ### Phase 1: Fundaci√≥n
+
 **Goal**: Infraestructura base lista para todas las fases siguientes ‚Äî design system, autenticaci√≥n JWT, layouts, seed de datos.
 **Depends on**: Nothing (first phase)
 **Success Criteria** (what must be TRUE):
+
   1. Admin puede hacer login y logout con JWT en cookie
   2. Design system (tokens, fuentes, colores teal) aplicado globalmente
   3. Sidebar admin funcional con navegaci√≥n
@@ -27,86 +29,82 @@ Stack: Next.js 16 (App Router) + Prisma + PostgreSQL (Supabase) + JWT + Tailwind
   5. TypeScript pasa sin errores
 
 Plans:
+
 - [x] 01-01: Design system, globals.css, fuentes, layout ra√≠z
 - [x] 01-02: Auth JWT ‚Äî lib/auth.ts, middleware, API login/logout/me
 - [x] 01-03: Admin layout, sidebar, dashboard placeholder, seed script
 
 ### Phase 2: Admin
+
 **Goal**: Panel admin completo ‚Äî el equipo m√©dico puede gestionar especialidades, m√©dicos y disponibilidades desde una UI protegida.
 **Depends on**: Phase 1
 **Success Criteria** (what must be TRUE):
+
   1. Dashboard muestra m√©tricas reales (turnos hoy, pendientes, confirmados)
   2. Admin puede crear, editar y eliminar especialidades con color
   3. Admin puede crear, editar y eliminar m√©dicos con avatar (upload a Supabase Storage)
   4. Admin puede configurar la disponibilidad semanal de cada m√©dico
   5. Todas las operaciones tienen feedback visual (loading, success, error)
-**Plans**: 7 plans
 
-Plans:
-- [ ] 02-01-PLAN.md ó Foundation: getWeekRange, requireAdmin helper, Drawer component, sidebar py-3 fix
-- [ ] 02-02-PLAN.md ó Dashboard: real Server Component with groupBy, 4 StatCards for current week
-- [ ] 02-03-PLAN.md ó Specialties API: GET list, POST create, PUT update, DELETE soft-delete
-- [ ] 02-04-PLAN.md ó Doctors API + Availability API: CRUD doctors, full-replace availability transaction
-- [ ] 02-05-PLAN.md ó Specialties UI: list page + Drawer + SpecialtyForm + inline delete confirm
-- [ ] 02-06-PLAN.md ó Doctors UI: list page + Drawer + DoctorForm with avatar upload
-- [ ] 02-07-PLAN.md ó Availability Editor UI: availability page + AvailabilityEditor with 7-day ranges
+**Plans**: 7 plans
+Plans:
+**Wave 1**
+
+- [ ] 02-01-PLAN.md ÔøΩ Foundation: getWeekRange, requireAdmin helper, Drawer component, sidebar py-3 fix
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
+- [ ] 02-02-PLAN.md ÔøΩ Dashboard: real Server Component with groupBy, 4 StatCards for current week
+- [ ] 02-03-PLAN.md ÔøΩ Specialties API: GET list, POST create, PUT update, DELETE soft-delete
+- [ ] 02-04-PLAN.md ÔøΩ Doctors API + Availability API: CRUD doctors, full-replace availability transaction
+
+**Wave 3** *(blocked on Wave 2 completion)*
+
+- [ ] 02-05-PLAN.md ÔøΩ Specialties UI: list page + Drawer + SpecialtyForm + inline delete confirm
+- [ ] 02-06-PLAN.md ÔøΩ Doctors UI: list page + Drawer + DoctorForm with avatar upload
+
+**Wave 4** *(blocked on Wave 3 completion)*
+
+- [ ] 02-07-PLAN.md ÔøΩ Availability Editor UI: availability page + AvailabilityEditor with 7-day ranges
 
 ### Phase 3: Reserva Paciente
+
 **Goal**: Paciente puede reservar un turno v√≠a wizard p√∫blico de 5 pasos sin necesidad de registro.
 **Depends on**: Phase 2
 **Success Criteria** (what must be TRUE):
+
   1. Paciente elige especialidad ‚Üí m√©dico ‚Üí fecha/hora ‚Üí datos ‚Üí confirmaci√≥n
   2. Slots se generan din√°micamente seg√∫n disponibilidad del m√©dico
   3. No se puede reservar un slot ya ocupado (bloqueo de doble turno)
   4. Turno queda en estado PENDING en la base de datos
-**Plans**: 7 plans
 
-Plans:
-- [ ] 02-01-PLAN.md ó Foundation: getWeekRange, requireAdmin helper, Drawer component, sidebar py-3 fix
-- [ ] 02-02-PLAN.md ó Dashboard: real Server Component with groupBy, 4 StatCards for current week
-- [ ] 02-03-PLAN.md ó Specialties API: GET list, POST create, PUT update, DELETE soft-delete
-- [ ] 02-04-PLAN.md ó Doctors API + Availability API: CRUD doctors, full-replace availability transaction
-- [ ] 02-05-PLAN.md ó Specialties UI: list page + Drawer + SpecialtyForm + inline delete confirm
-- [ ] 02-06-PLAN.md ó Doctors UI: list page + Drawer + DoctorForm with avatar upload
-- [ ] 02-07-PLAN.md ó Availability Editor UI: availability page + AvailabilityEditor with 7-day ranges
+**Plans**: TBD
 
 ### Phase 4: Gesti√≥n de Turnos
+
 **Goal**: El equipo puede ver, filtrar y gestionar el estado de todos los turnos.
 **Depends on**: Phase 3
 **Success Criteria** (what must be TRUE):
+
   1. Lista de turnos con filtros por fecha, m√©dico, estado
   2. Admin puede cambiar estado de turno (PENDING ‚Üí CONFIRMED / CANCELLED / COMPLETED)
   3. B√∫squeda de paciente por DNI
   4. Env√≠o de mensaje WhatsApp al confirmar (link wa.me)
-**Plans**: 7 plans
 
-Plans:
-- [ ] 02-01-PLAN.md ó Foundation: getWeekRange, requireAdmin helper, Drawer component, sidebar py-3 fix
-- [ ] 02-02-PLAN.md ó Dashboard: real Server Component with groupBy, 4 StatCards for current week
-- [ ] 02-03-PLAN.md ó Specialties API: GET list, POST create, PUT update, DELETE soft-delete
-- [ ] 02-04-PLAN.md ó Doctors API + Availability API: CRUD doctors, full-replace availability transaction
-- [ ] 02-05-PLAN.md ó Specialties UI: list page + Drawer + SpecialtyForm + inline delete confirm
-- [ ] 02-06-PLAN.md ó Doctors UI: list page + Drawer + DoctorForm with avatar upload
-- [ ] 02-07-PLAN.md ó Availability Editor UI: availability page + AvailabilityEditor with 7-day ranges
+**Plans**: TBD
 
 ### Phase 5: Pulido y Deploy
+
 **Goal**: App production-ready: accesibilidad, seguridad b√°sica y desplegada en Vercel + Supabase.
 **Depends on**: Phase 4
 **Success Criteria** (what must be TRUE):
+
   1. Dark mode funcional
   2. Contraste WCAG AA en todos los componentes
   3. Rate limiting en endpoints cr√≠ticos (login, reserva)
   4. App desplegada y accesible en Vercel
-**Plans**: 7 plans
 
-Plans:
-- [ ] 02-01-PLAN.md ó Foundation: getWeekRange, requireAdmin helper, Drawer component, sidebar py-3 fix
-- [ ] 02-02-PLAN.md ó Dashboard: real Server Component with groupBy, 4 StatCards for current week
-- [ ] 02-03-PLAN.md ó Specialties API: GET list, POST create, PUT update, DELETE soft-delete
-- [ ] 02-04-PLAN.md ó Doctors API + Availability API: CRUD doctors, full-replace availability transaction
-- [ ] 02-05-PLAN.md ó Specialties UI: list page + Drawer + SpecialtyForm + inline delete confirm
-- [ ] 02-06-PLAN.md ó Doctors UI: list page + Drawer + DoctorForm with avatar upload
-- [ ] 02-07-PLAN.md ó Availability Editor UI: availability page + AvailabilityEditor with 7-day ranges
+**Plans**: TBD
 
 ## Progress
 
