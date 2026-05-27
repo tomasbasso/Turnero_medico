@@ -5,6 +5,7 @@ status: draft
 shadcn_initialized: false
 preset: none
 created: 2026-05-27
+revised: 2026-05-27
 ---
 
 # Phase 3 — Reserva Paciente UI Design Contract
@@ -36,7 +37,7 @@ Declared values (multiples of 4):
 | Token | Value | Usage |
 |-------|-------|-------|
 | xs | 4px | Icon gaps (`gap-1`), chip internal spacing |
-| sm | 8px | Compact spacing — chip padding (`px-3 py-1.5`), calendar cell gap |
+| sm | 8px | Compact spacing — chip padding (`px-3 py-2`), calendar cell gap |
 | md | 16px | Default element spacing — form field gaps, card inner padding |
 | lg | 24px | Section padding — wizard card padding (`p-6`), step header padding |
 | xl | 32px | Layout gaps — space between step header and content |
@@ -44,9 +45,9 @@ Declared values (multiples of 4):
 | 3xl | 64px | Page-level top/bottom padding on the `/reservar` canvas |
 
 Exceptions:
-- Time slot chips: `px-3 py-2` (12px vertical — multiple of 4). Minimum 44px height to meet touch target requirement.
+- Time slot chips: `px-3 py-2` (8px vertical — multiple of 4). Minimum 44px height to meet touch target requirement.
 - Calendar day cells: minimum 40×40px per cell for tap accessibility.
-- Step progress indicator dots: 8×8px active, 6×6px inactive.
+- Step progress indicator dots: `w-3 h-3` (12px) active/completed, `w-2 h-2` (8px) upcoming — size differentiates state, no 6px values used.
 
 ---
 
@@ -64,11 +65,14 @@ Rules:
 - Card titles (specialty name, doctor name): 16px Inter, weight 600 (`text-base font-semibold`).
 - Card subtitles (doctor specialty, duration): 14px Inter, weight 400, `text-text-secondary`.
 - Calendar month/year heading: 16px Outfit semibold.
-- Calendar day-of-week headers (L M X J V S D): 12px Inter weight 600, uppercase, `text-text-muted`.
+- Calendar day-of-week headers (L M X J V S D): 14px Inter weight 600, uppercase, `text-text-muted`. (migrated from 12px — fits the declared 4-size scale)
 - Calendar day numbers: 14px Inter, weight 400 (available) / 400 (unavailable/muted).
-- Confirmation summary labels: 12px Inter, weight 600, uppercase, `tracking-wide text-text-muted`.
+- Confirmation summary labels: 14px Inter, weight 600, uppercase, `tracking-wide text-text-muted`. (migrated from 12px — fits the declared 4-size scale)
 - Confirmation summary values: 16px Inter, weight 400, `text-text-primary`.
+- Step label below progress dots: 14px Inter, weight 400, `text-text-secondary`. (migrated from 12px — fits the declared 4-size scale)
 - Only two weights used across the entire phase: 400 (regular) and 600 (semibold).
+
+**Valid type scale: 14px / 16px / 20px / 28px — exactly 4 sizes. No 12px values exist in this phase.**
 
 **Wizard note:** Body text is 16px (vs. 14px in admin) because the wizard targets patients on mobile — larger text reduces friction.
 
@@ -140,11 +144,11 @@ Border rule (No Harsh Borders): no `border-slate-900` or `border-black`. Max opa
 
 **Step progress bar:**
 - 5 dots in a horizontal row, centered above the step content
-- Active step: `w-3 h-3 rounded-full bg-accent`
-- Completed steps: `w-3 h-3 rounded-full bg-primary/40`
-- Upcoming steps: `w-2 h-2 rounded-full bg-border`
+- Active step: `w-3 h-3 rounded-full bg-accent` (12px)
+- Completed steps: `w-3 h-3 rounded-full bg-primary/40` (12px)
+- Upcoming steps: `w-2 h-2 rounded-full bg-border` (8px)
 - Connector lines between dots: `flex-1 h-0.5`, completed connector = `bg-primary/40`, upcoming = `bg-border`
-- Step label below dots: 12px Inter weight 400 `text-text-secondary` — shows current step name only (e.g. "Especialidad", "Médico", "Fecha y hora", "Tus datos", "Confirmación")
+- Step label below dots: 14px Inter weight 400 `text-text-secondary` — shows current step name only (e.g. "Especialidad", "Médico", "Fecha y hora", "Tus datos", "Confirmación")
 
 **Navigation pattern:**
 - "Volver" (back) link: top-left inside wizard card, `← Volver` — `text-sm text-primary hover:text-accent`, hidden on step 1
@@ -198,7 +202,7 @@ Border rule (No Harsh Borders): no `border-slate-900` or `border-black`. Max opa
 - Selected: `border-accent bg-primary/10`
 - Avatar: 48×48px circle. If `avatarUrl` → `<img className="rounded-full object-cover w-12 h-12">`. Else → initials `bg-primary/20 text-primary text-sm font-semibold rounded-full flex items-center justify-center w-12 h-12`
 - Name: 16px Inter semibold `text-text-primary`
-- Duration: `Clock` icon (12px) + "XX min por turno" — 14px Inter `text-text-secondary`
+- Duration: `Clock` icon (14px) + "XX min por turno" — 14px Inter `text-text-secondary`
 - Bio (if present): 14px Inter `text-text-secondary`, truncated to 2 lines (`line-clamp-2`)
 - Click: sets `selectedDoctor`, auto-advances to step 3
 
@@ -232,7 +236,7 @@ Border rule (No Harsh Borders): no `border-slate-900` or `border-black`. Max opa
 - Prev-month button disabled if current month is already today's month
 - Future navigation capped at +1 month from today (30-day window = at most 2 months visible)
 
-**Day-of-week headers row:** L M X J V S D — 12px Inter weight 600, uppercase, `text-text-muted`, centered per cell
+**Day-of-week headers row:** L M X J V S D — 14px Inter weight 600, uppercase, `text-text-muted`, centered per cell
 
 **Day cells grid:** `grid grid-cols-7 gap-1`
 
@@ -268,7 +272,7 @@ Each chip: `rounded-full px-3 py-2 text-sm font-semibold min-h-[44px] flex items
 | Selected | `bg-gradient-to-r from-primary to-accent text-white shadow-sm` |
 | Occupied (visible, not clickable) | `bg-slate-100 text-text-muted border border-border cursor-not-allowed opacity-60` |
 
-Selected chip + available day: activates the primary CTA button "Continuar".
+Selected chip + available day: activates the primary CTA button "Confirmar horario".
 
 **"No availability" state (doctor has no slots in 30-day window):**
 
@@ -279,7 +283,7 @@ Shown after day selection returns zero slots for ALL days, or surfaced at step e
 - Body: "No hay horarios disponibles en los próximos 30 días. Podés elegir otro médico." — 14px Inter `text-text-secondary`
 - CTA: "← Elegir otro médico" — secondary button, returns to step 2
 
-**Step 3 primary CTA:** "Continuar" — primary button, enabled only when a date AND time slot are selected. Full-width on mobile.
+**Step 3 primary CTA:** "Confirmar horario" — primary button, enabled only when a date AND time slot are selected. Full-width on mobile.
 
 ---
 
@@ -303,13 +307,13 @@ Shown after day selection returns zero slots for ALL days, or surfaced at step e
 | Obra social | `<input type="text">` | "Obra social (opcional)" | "Ej: OSDE, Swiss Medical" | Optional, max 100 chars | No |
 | Email | `<input type="email">` | "Email (opcional)" | "Ej: maria@gmail.com" | Optional, basic regex if provided | No |
 
-**Input style:** `w-full rounded-lg border border-border bg-white/90 px-3 py-2.5 text-base text-text-primary placeholder:text-text-muted focus:outline-none focus:border-[rgba(13,148,136,0.4)] focus:ring-2 focus:ring-[rgba(13,148,136,0.2)]`
+**Input style:** `w-full rounded-lg border border-border bg-white/90 px-3 py-3 min-h-[44px] text-base text-text-primary placeholder:text-text-muted focus:outline-none focus:border-[rgba(13,148,136,0.4)] focus:ring-2 focus:ring-[rgba(13,148,136,0.2)]`
 
 **Note on font size:** `text-base` (16px) on inputs to prevent iOS Safari auto-zoom.
 
 **Label style:** `block text-sm text-text-secondary font-medium mb-1`
 
-**Inline validation errors:** Shown below the field on blur or submit attempt. `text-xs text-error mt-1`. Example: "El DNI debe tener 7 u 8 dígitos."
+**Inline validation errors:** Shown below the field on blur or submit attempt. `text-sm text-error mt-1`. Example: "El DNI debe tener 7 u 8 dígitos."
 
 **Validation messages:**
 
@@ -354,11 +358,11 @@ Summary rows (label + value pairs):
 | "DNI" | `patientDni` |
 | "Obra social" | `patientInsurance` or "No informada" |
 
-Label style: `text-xs font-semibold uppercase tracking-wide text-text-muted`
+Label style: `text-sm font-semibold uppercase tracking-wide text-text-muted`
 Value style: `text-base text-text-primary`
 Each row: `flex justify-between items-baseline py-2 border-b border-border last:border-0`
 
-**Status chip:** `PENDIENTE` — `bg-amber-100 text-amber-700 rounded-full px-3 py-1 text-xs font-semibold` — shown below summary card. Copy: "Tu turno está pendiente de confirmación por el consultorio."
+**Status chip:** `PENDIENTE` — `bg-amber-100 text-amber-700 rounded-full px-3 py-1 text-sm font-semibold` — shown below summary card. Copy: "Tu turno está pendiente de confirmación por el consultorio."
 
 **Body copy below chip:** "Te contactaremos para confirmar el turno." — 14px Inter `text-text-secondary`, centered.
 
@@ -376,7 +380,7 @@ Same button contract as Phase 2 (`02-UI-SPEC.md`), applied in the wizard context
 | Secondary | `bg-transparent` | `text-primary` | `border border-[rgba(13,148,136,0.3)]` | `bg-primary/5` |
 | Ghost / link | `bg-transparent` | `text-primary` | none | `text-accent` (color shift) |
 
-All buttons: `rounded-lg` (8px), `px-4 py-2.5`, `text-sm font-semibold`, `transition-all duration-150`. Minimum touch target: 44px height.
+All buttons: `rounded-lg` (8px), `px-4 py-3`, `text-sm font-semibold`, `transition-all duration-150`. Minimum touch target: 44px height.
 
 Disabled: `opacity-50 cursor-not-allowed pointer-events-none`.
 
@@ -394,7 +398,7 @@ All copy in Spanish (Argentine). Tuteo informal ("Elegí", "Ingresá", "Intentá
 |---------------|-------------|
 | Step 1 — auto-advance | (no explicit button — click on card advances) |
 | Step 2 — auto-advance | (no explicit button — click on card advances) |
-| Step 3 — proceed to form | "Continuar" |
+| Step 3 — proceed to form | "Confirmar horario" |
 | Step 4 — submit booking | "Confirmar turno" |
 | Step 5 — reset wizard | "Reservar otro turno" |
 | Back navigation (all steps) | "← Volver" |
@@ -516,6 +520,15 @@ No third-party component registries used in this phase. All UI is hand-rolled wi
 | Icon library: lucide-react | `.planning/PROJECT.md` |
 | Animations: framer-motion | `.planning/PROJECT.md` |
 | Body text 16px (vs 14px admin) | Default for public/patient-facing mobile-first forms |
+
+---
+
+## Revision Log
+
+| Date | Changes |
+|------|---------|
+| 2026-05-27 | Initial draft |
+| 2026-05-27 | Checker revision: (1) removed 12px from type scale — day-of-week headers, confirmation summary labels, step label below dots all migrated to 14px; (2) progress dots corrected to w-2/w-3 (8px/12px active) — no 6px values; (3) time slot chips py-1.5 → py-2 (8px); (4) form inputs py-2.5 → py-3 + min-h-[44px] added; (5) Step 3 CTA "Continuar" → "Confirmar horario" (verb+noun). |
 
 ---
 
