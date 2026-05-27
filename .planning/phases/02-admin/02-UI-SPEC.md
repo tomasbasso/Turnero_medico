@@ -42,7 +42,7 @@ Declared values (multiples of 4):
 | 3xl | 64px | Page-level spacing — not used in admin (sidebar layout fills viewport) |
 
 Exceptions:
-- Nav items in sidebar: `px-3 py-2.5` (10px vertical = closest to sm/md midpoint — matches existing `AdminSidebar`)
+- Nav items in sidebar: `px-3 py-3` (12px vertical — multiple of 4). Current `AdminSidebar.tsx` uses `py-2.5`; this spec declares `py-3` and the correction will be applied when the sidebar is updated in this phase.
 - Avatar touch target / upload button: minimum 44px height
 - Time-range rows in availability editor: minimum 40px height for tap accessibility
 
@@ -53,15 +53,16 @@ Exceptions:
 | Role | Size | Weight | Line Height | Font | Tailwind |
 |------|------|--------|-------------|------|---------|
 | Body | 14px | 400 (regular) | 1.5 | Inter (`font-body`) | `text-sm` |
-| Label | 12px | 500 (medium) | 1.4 | Inter (`font-body`) | `text-xs font-medium` |
+| Label | 12px | 400 (regular) | 1.4 | Inter (`font-body`) | `text-xs` |
 | Heading (page) | 20px | 600 (semibold) | 1.2 | Outfit (`font-display`) | `text-xl font-semibold` |
-| Display (stat card number) | 28px | 700 (bold) | 1.1 | Outfit (`font-display`) | `text-3xl font-bold` |
+| Display (stat card number) | 28px | 600 (semibold) | 1.1 | Outfit (`font-display`) | `text-3xl font-semibold` |
 
 Rules:
 - Form inputs: 14px Inter, weight 400.
 - Table/list content: 14px Inter, weight 400.
 - Section sub-headings (e.g. day names in availability editor): 12px Inter, weight 600 (`text-xs font-semibold uppercase tracking-wide`).
 - Page title: 20px Outfit semibold — placed in a `<h1>` inside each page's content header area.
+- Only two weights are used across the entire phase: 400 (regular) and 600 (semibold). Weight 500 (medium) and 700 (bold) are not used. At 28px, semibold (600) reads as visually dominant without requiring bold.
 
 ---
 
@@ -115,10 +116,12 @@ Border rule (No Harsh Borders): inputs and cards use `border border-border` wher
 
 **Layout:** `p-6` page padding. Title row: `<h1>` "Dashboard" + subtitle "Semana del {fecha lunes} al {fecha domingo}".
 
+**Focal point:** The 4 stat card count numbers (28px Outfit semibold) are the primary focal point — the eye lands here first before scanning the labels below them.
+
 **Stat cards grid:** `grid grid-cols-2 gap-4` on mobile, `grid-cols-4` on md+. Each card:
 - Background: `bg-surface rounded-xl shadow-card p-6`
-- Top row: status label (12px Inter medium, status text color) + status icon (lucide, 16px)
-- Number: 28px Outfit bold, `text-text-primary`
+- Top row: status label (12px Inter weight 400, status text color) + status icon (lucide, 16px)
+- Number: 28px Outfit semibold, `text-text-primary`
 - Sub-label: "turnos esta semana" — 12px Inter, `text-text-secondary`
 - Left accent border: 4px solid, color per status:
   - PENDING → `border-l-4 border-amber-400`
@@ -142,7 +145,7 @@ Border rule (No Harsh Borders): inputs and cards use `border border-border` wher
 - Color swatch: 20×20px filled circle (`style={{ backgroundColor: specialty.color }}`, `rounded-full`)
 - Name: 14px Inter semibold `text-text-primary`
 - Description: 14px Inter `text-text-secondary` (truncated to 1 line)
-- Actions (ADMIN only, right-aligned): "Editar" (secondary button/icon) + "Eliminar" (destructive icon button, `text-error hover:text-error`)
+- Actions (ADMIN only, right-aligned): "Editar" icon button (`aria-label="Editar especialidad"`) + "Eliminar" destructive icon button (`aria-label="Eliminar especialidad"`, `text-error hover:text-error`)
 - Divider between rows: `border-b border-border` (ghost rule compliant — `#e2e8f0`)
 
 **RECEPTIONIST view:** Action column hidden entirely. No create button. Read-only banner NOT required — absence of controls is sufficient.
@@ -159,7 +162,7 @@ Border rule (No Harsh Borders): inputs and cards use `border border-border` wher
 **Trigger:** "Crear especialidad" button or "Editar" row action opens a right-side drawer/sheet overlay. No navigation. URL does NOT change.
 
 **Drawer anatomy:**
-- Overlay backdrop: `bg-black/40` full-screen, click to dismiss (cancel)
+- Overlay backdrop: `bg-black/40` full-screen, click to dismiss
 - Sheet panel: fixed right edge, `w-full max-w-md`, `bg-surface rounded-l-xl shadow-modal`, slides in from right (framer-motion: `x: 400 → 0`, `duration: 0.25s ease-out`)
 - Header: "Crear especialidad" or "Editar especialidad" — 20px Outfit semibold + `×` close button (top right, `text-text-secondary`)
 - Accent bar: 4px `bg-gradient-to-b from-primary to-accent` left border strip on drawer panel
@@ -174,9 +177,11 @@ Border rule (No Harsh Borders): inputs and cards use `border border-border` wher
 
 **Input style:** `w-full rounded-lg border border-border bg-white px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-[rgba(13,148,136,0.4)] focus:ring-2 focus:ring-[rgba(13,148,136,0.2)]`
 
-**Label style:** `block text-xs font-medium text-text-secondary mb-1`
+**Label style:** `block text-xs text-text-secondary mb-1`
 
-**Footer (sticky bottom of drawer):** "Cancelar" (secondary button) + "Guardar" (primary button). During submit: "Guardar" shows spinner + disabled state.
+**Footer (sticky bottom of drawer):** Secondary dismiss control "Descartar cambios" (secondary button — see note below) + "Guardar especialidad" (primary button). During submit: "Guardar especialidad" shows spinner + disabled state.
+
+**Note on dismiss control:** "Descartar cambios" is a secondary dismiss control, not a primary CTA. It is exempt from the CTA noun-qualifier rule — its role is modal dismissal, not a data action.
 
 **Success:** Drawer closes, list re-fetches (router.refresh()), no toast needed.
 
@@ -186,7 +191,7 @@ Border rule (No Harsh Borders): inputs and cards use `border border-border` wher
 
 ### 4. Delete Specialty — Confirmation
 
-**Pattern:** Inline confirmation within the row (not a modal dialog). On first "Eliminar" click, the row action area transforms to: "¿Confirmar eliminación?" text (12px `text-text-secondary`) + "Sí, eliminar" (`text-error font-medium text-sm`) + "Cancelar" (`text-text-secondary text-sm`). No dialog overlay.
+**Pattern:** Inline confirmation within the row (not a modal dialog). On first "Eliminar" click, the row action area transforms to: "¿Confirmar eliminación?" text (12px `text-text-secondary`) + "Sí, eliminar" (`text-error font-semibold text-sm`) + "Descartar cambios" (`text-text-secondary text-sm`). No dialog overlay.
 
 **Destructive action label:** "Sí, eliminar"
 
@@ -201,10 +206,10 @@ Border rule (No Harsh Borders): inputs and cards use `border border-border` wher
 **List:** `bg-surface rounded-xl shadow-card`. Each row:
 - Avatar: 40×40px circle. If `doctor.avatarUrl` → `<img>` with `rounded-full object-cover`. Else → initials via `getInitials(name)`, `bg-primary/20 text-primary text-sm font-semibold rounded-full flex items-center justify-center`
 - Name: 14px Inter semibold `text-text-primary`
-- Specialty chip: `bg-teal-100 text-teal-700 rounded-full px-2 py-0.5 text-xs font-medium` with specialty color dot (8×8px circle in `specialty.color`) prepended
+- Specialty chip: `bg-teal-100 text-teal-700 rounded-full px-2 py-0.5 text-xs` with specialty color dot (8×8px circle in `specialty.color`) prepended
 - Phone: 14px Inter `text-text-secondary`
 - Duration: "XX min" — 12px Inter `text-text-muted`
-- Actions (ADMIN only): "Editar" icon button + "Disponibilidad" link button (`text-accent`) + "Eliminar" destructive icon button
+- Actions (ADMIN only): "Editar" icon button (`aria-label="Editar médico"`) + "Disponibilidad" link button (`text-accent`) + "Eliminar" destructive icon button (`aria-label="Eliminar médico"`)
 - Divider: `border-b border-border`
 
 **RECEPTIONIST:** Actions column hidden. "Disponibilidad" link visible (read-only view of availability).
@@ -240,7 +245,7 @@ Border rule (No Harsh Borders): inputs and cards use `border border-border` wher
 
 **Select style:** Same border/radius/focus as text input. Arrow icon via `appearance-none` + background SVG.
 
-**Footer:** Same pattern as Specialty drawer — "Cancelar" + "Guardar" with loading state.
+**Footer:** Same pattern as Specialty drawer — "Descartar cambios" (secondary dismiss control) + "Guardar médico" (primary button) with loading state.
 
 ---
 
@@ -274,7 +279,7 @@ Same inline row confirmation pattern as specialties.
 
 **Save:** Single "Guardar disponibilidad" primary button at the bottom of the page. Replaces entire availability for the doctor (full replace, not delta). Loading state on button during save. Success: "Disponibilidad guardada correctamente" — inline success message below button (`text-sm text-success`). Error: `text-sm text-error` "No se pudo guardar. Intentá nuevamente."
 
-**RECEPTIONIST view:** All inputs disabled (`disabled` attribute, visual: `opacity-60 cursor-not-allowed`). "Agregar franja" and "×" buttons hidden. "Guardar" button hidden.
+**RECEPTIONIST view:** All inputs disabled (`disabled` attribute, visual: `opacity-60 cursor-not-allowed`). "Agregar franja" and "×" buttons hidden. "Guardar disponibilidad" button hidden.
 
 ---
 
@@ -287,7 +292,7 @@ Same inline row confirmation pattern as specialties.
 | Destructive | `bg-transparent` | `text-error` | none | `bg-error/5` |
 | Ghost | `bg-transparent` | `text-text-secondary` | none | `bg-slate-100` |
 
-All buttons: `rounded-lg` (8px), `px-4 py-2`, `text-sm font-medium`, `transition-all duration-150`. Minimum touch target: 44px height for primary/destructive actions.
+All buttons: `rounded-lg` (8px), `px-4 py-2`, `text-sm font-semibold`, `transition-all duration-150`. Minimum touch target: 44px height for primary/destructive actions.
 
 Disabled state (all variants): `opacity-50 cursor-not-allowed pointer-events-none`.
 
@@ -299,12 +304,24 @@ Loading state: spinner icon (lucide `Loader2` with `animate-spin`, 16px) replace
 
 All copy in Spanish (Argentine). Tuteo informal ("Creá", "Intentá", "Agregá").
 
+### Primary CTA Labels
+
+| Screen / Context | Primary CTA |
+|-----------------|-------------|
+| Specialties list header | "Crear especialidad" |
+| Doctors list header | "Crear médico" |
+| Specialty drawer footer | "Guardar especialidad" |
+| Doctor drawer footer | "Guardar médico" |
+| Availability page footer | "Guardar disponibilidad" |
+
+### Secondary Dismiss Control
+
+"Descartar cambios" is used as the secondary dismiss control in all drawer footers and inline confirmations. It is a modal-dismissal control, not a primary CTA, and is exempt from the CTA noun-qualifier rule.
+
+### Full Copy Reference
+
 | Element | Copy |
 |---------|------|
-| Primary CTA — Specialties | "Crear especialidad" |
-| Primary CTA — Doctors | "Crear médico" |
-| Primary CTA — Save form | "Guardar" |
-| Primary CTA — Save availability | "Guardar disponibilidad" |
 | Empty state — Specialties heading | "Sin especialidades" |
 | Empty state — Specialties body | "Aún no hay especialidades registradas. Creá la primera para empezar." |
 | Empty state — Doctors heading | "Sin médicos" |
@@ -319,7 +336,7 @@ All copy in Spanish (Argentine). Tuteo informal ("Creá", "Intentá", "Agregá")
 | Delete specialty — confirm action | "Sí, eliminar" |
 | Delete doctor — inline confirm | "¿Confirmar eliminación? Esta acción no se puede deshacer." |
 | Delete doctor — confirm action | "Sí, eliminar" |
-| Cancel any action | "Cancelar" |
+| Secondary dismiss (drawers + inline confirm) | "Descartar cambios" |
 | Add time range | "+ Agregar franja" |
 | Remove time range | "×" (screen-reader label: "Eliminar franja") |
 | Back to doctors list | "← Volver a Médicos" |
@@ -348,7 +365,7 @@ All copy in Spanish (Argentine). Tuteo informal ("Creá", "Intentá", "Agregá")
 | Doctor row — Eliminar | Visible | Hidden |
 | Doctor row — Disponibilidad link | Visible | Visible (read-only) |
 | Availability — Add/remove controls | Visible | Hidden |
-| Availability — "Guardar" button | Visible | Hidden |
+| Availability — "Guardar disponibilidad" button | Visible | Hidden |
 | Availability — inputs | Enabled | Disabled (`opacity-60 cursor-not-allowed`) |
 
 Guard implementation: Server Components read `x-user-role` header (injected by middleware). Conditional rendering — do NOT render hidden elements with CSS `display:none` alone; exclude from JSX output for CRUD buttons.
