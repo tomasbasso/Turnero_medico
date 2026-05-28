@@ -47,7 +47,7 @@ Plans:
   5. Todas las operaciones tienen feedback visual (loading, success, error)
 
 **Plans**: 7 plans
-Plans:
+Plans:
 **Wave 1**
 
 - [x] 02-01-PLAN.md — Foundation: getWeekRange, requireAdmin helper, Drawer component, sidebar py-3 fix
@@ -78,7 +78,23 @@ Plans:
   3. No se puede reservar un slot ya ocupado (bloqueo de doble turno)
   4. Turno queda en estado PENDING en la base de datos
 
-**Plans**: TBD
+**Plans**: 5 plans
+
+Plans:
+
+**Wave 1** *(parallel — no dependencies)*
+
+- [ ] 03-01-PLAN.md — Schema migration (patientInsurance D-05) + public layout + /reservar page shell
+- [ ] 03-02-PLAN.md — Public APIs: GET specialties, GET doctors, GET slots with generateSlots algorithm
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
+- [ ] 03-03-PLAN.md — POST /api/public/appointments — validation D-01/D-02/D-03/D-05 + P2002 race condition
+- [ ] 03-04-PLAN.md — BookingWizard shell + StepProgress + StepSpecialty + StepDoctor (steps 1-2)
+
+**Wave 3** *(blocked on Wave 2 completion)*
+
+- [ ] 03-05-PLAN.md — StepDateTime + StepPatientForm + StepConfirmation + BookingWizard final wiring
 
 ### Phase 4: Gestión de Turnos
 
@@ -112,6 +128,6 @@ Plans:
 |-------|----------------|--------|-----------|
 | 1. Fundación | 3/3 | Complete | 2026-05-27 |
 | 2. Admin | 0/TBD | Not started | - |
-| 3. Reserva Paciente | 0/TBD | Not started | - |
+| 3. Reserva Paciente | 0/5 | Not started | - |
 | 4. Gestión de Turnos | 0/TBD | Not started | - |
 | 5. Pulido y Deploy | 0/TBD | Not started | - |
