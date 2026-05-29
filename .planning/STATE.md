@@ -20,8 +20,8 @@ Phase 4: Gestión de Turnos
 
 ## Last Session
 
-- Stopped at: Phase 3 complete — booking wizard end-to-end
-- Resume file: .planning/phases/03-reserva-paciente/03-05-SUMMARY.md
+- Stopped at: Phase 4 context gathered
+- Resume file: .planning/phases/04-gestion-turnos/04-CONTEXT.md
 
 ## Phase Status
 
