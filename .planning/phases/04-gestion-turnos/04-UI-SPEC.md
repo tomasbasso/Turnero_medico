@@ -49,6 +49,7 @@ Exceptions:
 - Table cell padding: `px-6 py-4` (horizontal 24px, vertical 16px) — matches `SpecialtiesList` row pattern.
 - Touch targets on action buttons: minimum 32px height (`p-1` + 16px icon = ~24px); wrap in `min-h-[32px]` if needed.
 - Filter bar inputs: `px-3 py-2` (12px / 8px) — compact for toolbar placement.
+- Status badge pill: `px-2.5 py-0.5` (10px / 2px) — standard Tailwind pill badge pattern, intentional deviation for compact inline badge aesthetics matching Tailwind's default `badge` shorthand.
 
 ---
 
@@ -132,7 +133,7 @@ Filter bar container: `flex flex-wrap items-center gap-3 mb-6`.
 Input/select base class:
 ```
 rounded-lg border border-border bg-surface px-3 py-2 text-sm text-text-primary
-focus:border-[rgba(13,148,136,0.4)] focus:outline-none focus:ring-1 focus:ring-[rgba(13,148,136,0.4)]
+focus:border-[rgba(20,184,166,0.4)] focus:outline-none focus:ring-1 focus:ring-[rgba(20,184,166,0.4)]
 ```
 
 All filtering is client-side. On filter change, component calls `GET /api/admin/appointments`
@@ -182,7 +183,7 @@ Radius: `rounded-full` (`--radius-full: 9999px`).
 **CONFIRMED:**
 - WhatsApp link: `<a href="https://wa.me/549{phone}?text={encoded}" target="_blank">`.
   Render as `<MessageCircle className="h-4 w-4 text-accent" />` + label "Enviar WA" in `text-sm text-accent`.
-- If `whatsappSent === true`: replace icon with `<MessageCircleCheck className="h-4 w-4 text-accent" />` (no label change needed, or label "WA enviado").
+- If `whatsappSent === true`: replace icon with `<MessageCircleCheck className="h-4 w-4 text-accent" />` and change label to "WA enviado".
 - Clicking the link fires `PATCH /api/admin/appointments/[id]/whatsapp` automatically (optimistic — update local state immediately, fire fetch without await blocking UI).
 
 **CANCELLED:**
@@ -192,7 +193,7 @@ Radius: `rounded-full` (`--radius-full: 9999px`).
 - No action buttons. Show `<span className="text-xs text-text-muted">—</span>`.
 
 Optional detail icon (Claude's discretion — implement if planner decides to add Drawer):
-- `<Eye className="h-4 w-4 text-text-secondary hover:text-text-primary" />` at the end of the Acciones cell.
+- `<Eye className="h-4 w-4 text-text-secondary hover:text-text-primary" aria-label="Ver detalle del turno" />` at the end of the Acciones cell.
 - Opens `Drawer` (existing `components/admin/Drawer.tsx`) with full appointment detail: phone, email, obra social, notes.
 
 ### State change — PENDING inline confirm
@@ -253,7 +254,7 @@ Tone: direct, practical Spanish (Argentina locale). No formal "usted". No emoji 
 
 | State | Visual Treatment |
 |-------|-----------------|
-| Filter input focus | `border-[rgba(13,148,136,0.4)] ring-1 ring-[rgba(13,148,136,0.4)]` |
+| Filter input focus | `border-[rgba(20,184,166,0.4)] ring-1 ring-[rgba(20,184,166,0.4)]` |
 | Table row hover | `hover:bg-background transition-colors` |
 | Action button hover | `hover:text-{color}-900 transition-colors` |
 | WhatsApp link hover | `hover:underline` |
@@ -312,11 +313,11 @@ Icons from `lucide-react` (already a project dependency).
 
 ## Checker Sign-Off
 
-- [ ] Dimension 1 Copywriting: PASS
-- [ ] Dimension 2 Visuals: PASS
-- [ ] Dimension 3 Color: PASS
-- [ ] Dimension 4 Typography: PASS
-- [ ] Dimension 5 Spacing: PASS
-- [ ] Dimension 6 Registry Safety: PASS
+- [FLAG] Dimension 1 Copywriting: "Confirmar"/"Cancelar" single-word row actions — acceptable in table context
+- [FLAG] Dimension 2 Visuals: No explicit focal-point statement — implied by table card structure
+- [x] Dimension 3 Color: PASS
+- [x] Dimension 4 Typography: PASS
+- [x] Dimension 5 Spacing: PASS (badge exception declared with justification)
+- [x] Dimension 6 Registry Safety: PASS
 
-**Approval:** pending
+**Approval:** approved — 2026-05-29
