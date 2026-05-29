@@ -107,7 +107,21 @@ Plans:
   3. Búsqueda de paciente por DNI
   4. Envío de mensaje WhatsApp al confirmar (link wa.me)
 
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+
+**Wave 1**
+
+- [ ] 04-01-PLAN.md — API Layer: GET /api/admin/appointments (list+filters), PATCH /[id] (status), PATCH /[id]/whatsapp (whatsappSent)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
+- [ ] 04-02-PLAN.md — AppointmentsList client component: filter bar, table with 5 columns, status actions, WhatsApp link, optimistic updates
+
+**Wave 3** *(blocked on Wave 2 completion)*
+
+- [ ] 04-03-PLAN.md — /admin/turnos Server Component page: SSR initial fetch for today, passes initialData+doctors to AppointmentsList
 
 ### Phase 5: Pulido y Deploy
 
@@ -129,5 +143,5 @@ Plans:
 | 1. Fundación | 3/3 | Complete | 2026-05-27 |
 | 2. Admin | 0/TBD | Not started | - |
 | 3. Reserva Paciente | 0/5 | Not started | - |
-| 4. Gestión de Turnos | 0/TBD | Not started | - |
+| 4. Gestión de Turnos | 0/3 | Not started | - |
 | 5. Pulido y Deploy | 0/TBD | Not started | - |
