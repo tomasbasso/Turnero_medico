@@ -37,18 +37,21 @@ interface AppointmentsListProps {
 const inputClass =
   'rounded-lg border border-border bg-surface px-3 py-2 text-sm text-text-primary focus:border-[rgba(20,184,166,0.4)] focus:outline-none focus:ring-1 focus:ring-[rgba(20,184,166,0.4)]'
 
+type Tab = 'pendientes' | 'pordia'
+
+const TAB_FILTERS: Record<Tab, { date: string; doctorId: string; status: string; dni: string }> = {
+  pendientes: { date: '', doctorId: '', status: 'PENDING', dni: '' },
+  pordia: { date: new Date().toISOString().split('T')[0], doctorId: '', status: '', dni: '' },
+}
+
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export function AppointmentsList({ initialData, doctors, role }: AppointmentsListProps) {
+  const [activeTab, setActiveTab] = useState<Tab>('pendientes')
   const [appointments, setAppointments] = useState<Appointment[]>(initialData)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [filters, setFilters] = useState({
-    date: new Date().toISOString().split('T')[0],
-    doctorId: '',
-    status: '',
-    dni: '',
-  })
+  const [filters, setFilters] = useState(TAB_FILTERS.pendientes)
   const [cancellingId, setCancellingId] = useState<number | null>(null)
   const [loadingId, setLoadingId] = useState<number | null>(null)
   const [mutationError, setMutationError] = useState<string | null>(null)
@@ -103,6 +106,13 @@ export function AppointmentsList({ initialData, doctors, role }: AppointmentsLis
 
   // ─── Handlers ───────────────────────────────────────────────────────────
 
+  function handleTabChange(tab: Tab) {
+    setActiveTab(tab)
+    setFilters(TAB_FILTERS[tab])
+    setCancellingId(null)
+    setMutationError(null)
+  }
+
   async function handleStatusChange(id: number, status: string) {
     setLoadingId(id)
     setMutationError(null)
@@ -149,14 +159,42 @@ export function AppointmentsList({ initialData, doctors, role }: AppointmentsLis
 
   return (
     <div>
+      {/* Tabs */}
+      <div className="flex gap-1 mb-6 border-b border-border">
+        <button
+          onClick={() => handleTabChange('pendientes')}
+          className={cn(
+            'px-4 py-2 text-sm font-semibold border-b-2 -mb-px transition-colors',
+            activeTab === 'pendientes'
+              ? 'border-accent text-accent'
+              : 'border-transparent text-text-secondary hover:text-text-primary'
+          )}
+        >
+          Pendientes
+        </button>
+        <button
+          onClick={() => handleTabChange('pordia')}
+          className={cn(
+            'px-4 py-2 text-sm font-semibold border-b-2 -mb-px transition-colors',
+            activeTab === 'pordia'
+              ? 'border-accent text-accent'
+              : 'border-transparent text-text-secondary hover:text-text-primary'
+          )}
+        >
+          Por día
+        </button>
+      </div>
+
       {/* Filter bar */}
       <div className="flex flex-wrap items-center gap-3 mb-6">
-        <input
-          type="date"
-          className={inputClass}
-          value={filters.date}
-          onChange={(e) => setFilters((f) => ({ ...f, date: e.target.value }))}
-        />
+        {activeTab === 'pordia' && (
+          <input
+            type="date"
+            className={inputClass}
+            value={filters.date}
+            onChange={(e) => setFilters((f) => ({ ...f, date: e.target.value }))}
+          />
+        )}
         <select
           className={cn(inputClass, 'w-48')}
           value={filters.doctorId}
@@ -169,20 +207,22 @@ export function AppointmentsList({ initialData, doctors, role }: AppointmentsLis
             </option>
           ))}
         </select>
-        <select
-          className={cn(inputClass, 'w-40')}
-          value={filters.status}
-          onChange={(e) => setFilters((f) => ({ ...f, status: e.target.value }))}
-        >
-          <option value="">Todos los estados</option>
-          {(['PENDING', 'CONFIRMED', 'CANCELLED', 'COMPLETED'] as AppointmentStatus[]).map(
-            (s) => (
-              <option key={s} value={s}>
-                {STATUS_LABELS[s]}
-              </option>
-            )
-          )}
-        </select>
+        {activeTab === 'pordia' && (
+          <select
+            className={cn(inputClass, 'w-40')}
+            value={filters.status}
+            onChange={(e) => setFilters((f) => ({ ...f, status: e.target.value }))}
+          >
+            <option value="">Todos los estados</option>
+            {(['PENDING', 'CONFIRMED', 'CANCELLED', 'COMPLETED'] as AppointmentStatus[]).map(
+              (s) => (
+                <option key={s} value={s}>
+                  {STATUS_LABELS[s]}
+                </option>
+              )
+            )}
+          </select>
+        )}
         <input
           type="text"
           className={cn(inputClass, 'w-40')}
