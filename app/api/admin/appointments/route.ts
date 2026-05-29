@@ -2,6 +2,9 @@ import { NextRequest } from 'next/server'
 import { requireAdmin } from '@/lib/auth-helpers'
 import { prisma } from '@/lib/prisma'
 
+const VALID_STATUSES = ['PENDING', 'CONFIRMED', 'CANCELLED', 'COMPLETED'] as const
+type ValidStatus = (typeof VALID_STATUSES)[number]
+
 export async function GET(request: NextRequest) {
   const authResult = requireAdmin(request)
   if (authResult instanceof Response) return authResult
@@ -28,6 +31,9 @@ export async function GET(request: NextRequest) {
   }
 
   if (status) {
+    if (!VALID_STATUSES.includes(status as ValidStatus)) {
+      return Response.json({ error: 'Estado inválido' }, { status: 400 })
+    }
     where.status = status
   }
 

@@ -51,6 +51,7 @@ export function AppointmentsList({ initialData, doctors, role }: AppointmentsLis
   })
   const [cancellingId, setCancellingId] = useState<number | null>(null)
   const [loadingId, setLoadingId] = useState<number | null>(null)
+  const [mutationError, setMutationError] = useState<string | null>(null)
 
   const dniDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -104,6 +105,7 @@ export function AppointmentsList({ initialData, doctors, role }: AppointmentsLis
 
   async function handleStatusChange(id: number, status: string) {
     setLoadingId(id)
+    setMutationError(null)
     try {
       const res = await fetch(`/api/admin/appointments/${id}`, {
         method: 'PATCH',
@@ -115,7 +117,11 @@ export function AppointmentsList({ initialData, doctors, role }: AppointmentsLis
         setAppointments((prev) =>
           prev.map((a) => (a.id === id ? { ...a, ...data.appointment } : a))
         )
+      } else {
+        setMutationError('No se pudo actualizar el turno. Intentá de nuevo.')
       }
+    } catch {
+      setMutationError('No se pudo actualizar el turno. Intentá de nuevo.')
     } finally {
       setLoadingId(null)
       setCancellingId(null)
@@ -185,6 +191,13 @@ export function AppointmentsList({ initialData, doctors, role }: AppointmentsLis
           onChange={(e) => setFilters((f) => ({ ...f, dni: e.target.value }))}
         />
       </div>
+
+      {/* Mutation error */}
+      {mutationError && (
+        <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm text-error">
+          {mutationError}
+        </div>
+      )}
 
       {/* Loading */}
       {loading && (
@@ -277,7 +290,7 @@ export function AppointmentsList({ initialData, doctors, role }: AppointmentsLis
 
                     {/* Acciones */}
                     <td className="px-6 py-4 align-top w-40">
-                      {appointment.status === 'PENDING' && (
+                      {appointment.status === 'PENDING' && role === 'ADMIN' && (
                         <>
                           {cancellingId === appointment.id ? (
                             <div className="flex flex-col items-end gap-1">
@@ -350,7 +363,8 @@ export function AppointmentsList({ initialData, doctors, role }: AppointmentsLis
                       )}
 
                       {(appointment.status === 'CANCELLED' ||
-                        appointment.status === 'COMPLETED') && (
+                        appointment.status === 'COMPLETED' ||
+                        (appointment.status === 'PENDING' && role !== 'ADMIN')) && (
                         <span className="text-xs text-text-muted">—</span>
                       )}
                     </td>
