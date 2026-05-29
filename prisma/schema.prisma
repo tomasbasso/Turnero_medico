@@ -64,8 +64,9 @@ model Appointment {
   patientName  String
   patientDni   String
   patientPhone String
-  patientEmail String?
-  date         DateTime          @db.Date
+  patientEmail     String?
+  patientInsurance String?
+  date             DateTime          @db.Date
   time         String
   status       AppointmentStatus @default(PENDING)
   notes        String?
