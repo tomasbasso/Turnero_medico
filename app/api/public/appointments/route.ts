@@ -41,11 +41,20 @@ export async function POST(request: NextRequest) {
   const appointmentDate = new Date(year, month - 1, day)
 
   try {
+    const doctor = await prisma.doctor.findUnique({
+      where: { id: Number(doctorId), isActive: true },
+      select: { durationMin: true },
+    })
+    if (!doctor) {
+      return Response.json({ error: 'Doctor no encontrado' }, { status: 400 })
+    }
+
     const appointment = await prisma.appointment.create({
       data: {
         doctorId: Number(doctorId),
         date: appointmentDate,
         time: String(time),
+        durationMin: doctor.durationMin,
         patientName: String(patientName).trim(),
         patientDni: dniClean,
         patientPhone: phoneClean,
