@@ -5,6 +5,11 @@ import { prisma } from '@/lib/prisma'
 const VALID_STATUSES = ['PENDING', 'CONFIRMED', 'CANCELLED', 'COMPLETED', 'NO_SHOW'] as const
 type ValidStatus = (typeof VALID_STATUSES)[number]
 
+function timeToMin(t: string): number {
+  const [h, m] = t.split(':').map(Number)
+  return h * 60 + m
+}
+
 export async function GET(request: NextRequest) {
   const authResult = requireStaff(request)
   if (authResult instanceof Response) return authResult
@@ -120,11 +125,6 @@ export async function POST(request: NextRequest) {
     },
     select: { time: true, durationMin: true },
   })
-
-  function timeToMin(t: string): number {
-    const [h, m] = t.split(':').map(Number)
-    return h * 60 + m
-  }
 
   const reqMin = timeToMin(time)
   const hasConflict = existing.some((a) => {
