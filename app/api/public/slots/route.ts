@@ -18,9 +18,15 @@ function generateSlots(startTime: string, endTime: string, durationMin: number):
   return slots
 }
 
+function timeToMin(t: string): number {
+  const [h, m] = t.split(':').map(Number)
+  return h * 60 + m
+}
+
 export async function GET(request: NextRequest) {
   const doctorIdStr = request.nextUrl.searchParams.get('doctorId')
   const dateStr = request.nextUrl.searchParams.get('date')
+  const durationMinStr = request.nextUrl.searchParams.get('durationMin')
 
   if (!doctorIdStr || !dateStr) {
     return Response.json({ error: 'doctorId y date son requeridos' }, { status: 400 })
@@ -43,7 +49,6 @@ export async function GET(request: NextRequest) {
     return Response.json({ slots: [] })
   }
 
-  // Seed uses dayOfWeek: 1=Monday ... 6=Saturday, 0=Sunday — matches JS Date.getDay()
   const dayOfWeek = targetDate.getDay()
 
   try {
@@ -58,9 +63,8 @@ export async function GET(request: NextRequest) {
           date: { gte: targetDate, lt: new Date(year, month - 1, day + 1) },
           status: { notIn: ['CANCELLED', 'NO_SHOW'] },
         },
-        select: { time: true },
+        select: { time: true, durationMin: true },
       }),
-      // Blocked day (vacation / holiday / day off): startDate <= target <= endDate
       prisma.timeOff.findFirst({
         where: {
           doctorId,
@@ -75,15 +79,25 @@ export async function GET(request: NextRequest) {
       return Response.json({ error: 'Médico no encontrado' }, { status: 404 })
     }
 
-    // Doctor is off this day — no slots available.
     if (timeOff) {
       return Response.json({ slots: [] })
     }
 
-    const bookedTimes = new Set(existingAppointments.map((a) => a.time))
+    // Use query param duration if provided and valid; otherwise fall back to doctor default
+    const parsedDur = durationMinStr ? parseInt(durationMinStr, 10) : NaN
+    const requestedDur = !isNaN(parsedDur) && parsedDur > 0 ? parsedDur : doctor.durationMin
+
     const slots = doctor.availabilities
       .flatMap((av) => generateSlots(av.startTime, av.endTime, doctor.durationMin))
-      .map((time) => ({ time, available: !bookedTimes.has(time) }))
+      .map((slotTime) => {
+        const tMin = timeToMin(slotTime)
+        const available = !existingAppointments.some((a) => {
+          const aMin = timeToMin(a.time)
+          // Overlap: existing appointment range [aMin, aMin+aDur) overlaps with [tMin, tMin+requestedDur)
+          return aMin < tMin + requestedDur && aMin + a.durationMin > tMin
+        })
+        return { time: slotTime, available }
+      })
       .sort((a, b) => a.time.localeCompare(b.time))
 
     return Response.json({ slots })
