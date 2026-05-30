@@ -69,6 +69,7 @@ model Appointment {
   patientInsurance String?
   date             DateTime          @db.Date
   time         String
+  durationMin  Int               @default(20)
   status       AppointmentStatus @default(PENDING)
   notes        String?
   whatsappSent Boolean           @default(false)
