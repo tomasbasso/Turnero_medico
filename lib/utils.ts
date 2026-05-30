@@ -38,6 +38,7 @@ export const STATUS_LABELS: Record<string, string> = {
   CONFIRMED: 'Confirmado',
   CANCELLED: 'Cancelado',
   COMPLETED: 'Completado',
+  NO_SHOW:   'Ausente',
 }
 
 export const STATUS_COLORS: Record<string, string> = {
@@ -45,6 +46,7 @@ export const STATUS_COLORS: Record<string, string> = {
   CONFIRMED: 'bg-teal-100 text-teal-700',
   CANCELLED: 'bg-red-100 text-red-700',
   COMPLETED: 'bg-slate-100 text-slate-600',
+  NO_SHOW:   'bg-orange-100 text-orange-700',
 }
 
 export function getWeekRange(): { monday: Date; sunday: Date } {

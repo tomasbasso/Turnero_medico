@@ -1,12 +1,12 @@
 import { NextRequest } from 'next/server'
-import { requireAdmin } from '@/lib/auth-helpers'
+import { requireStaff } from '@/lib/auth-helpers'
 import { prisma } from '@/lib/prisma'
 
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const authResult = requireAdmin(request)
+  const authResult = requireStaff(request)
   if (authResult instanceof Response) return authResult
 
   // Next.js 16: params is a Promise — must be awaited before destructuring

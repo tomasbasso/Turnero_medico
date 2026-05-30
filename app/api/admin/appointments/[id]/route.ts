@@ -1,15 +1,15 @@
 import { NextRequest } from 'next/server'
-import { requireAdmin } from '@/lib/auth-helpers'
+import { requireStaff } from '@/lib/auth-helpers'
 import { prisma } from '@/lib/prisma'
 
-const VALID_STATUSES = ['PENDING', 'CONFIRMED', 'CANCELLED', 'COMPLETED'] as const
+const VALID_STATUSES = ['PENDING', 'CONFIRMED', 'CANCELLED', 'COMPLETED', 'NO_SHOW'] as const
 type ValidStatus = (typeof VALID_STATUSES)[number]
 
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const authResult = requireAdmin(request)
+  const authResult = requireStaff(request)
   if (authResult instanceof Response) return authResult
 
   // Next.js 16: params is a Promise — must be awaited before destructuring

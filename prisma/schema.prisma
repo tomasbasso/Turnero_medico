@@ -43,6 +43,7 @@ model Doctor {
   isActive       Boolean        @default(true)
   availabilities Availability[]
   appointments   Appointment[]
+  timeOff        TimeOff[]
   user           User?
   createdAt      DateTime       @default(now()) @db.Timestamp(6)
   updatedAt      DateTime       @updatedAt @db.Timestamp(6)
@@ -74,10 +75,26 @@ model Appointment {
   createdAt    DateTime          @default(now()) @db.Timestamp(6)
   updatedAt    DateTime          @updatedAt @db.Timestamp(6)
 
-  @@unique([doctorId, date, time])
+  // NOTE: uniqueness on (doctorId, date, time) is enforced by a PARTIAL unique
+  // index that ignores CANCELLED/NO_SHOW rows, so a freed slot can be re-booked.
+  // Prisma cannot express filtered indexes, so it lives in prisma/sql/partial-unique-slot.sql
+  // and must be applied manually after `db push`. A full @@unique here is intentionally
+  // omitted to avoid cancelled rows permanently blocking a slot.
   @@index([patientDni])
   @@index([date])
   @@index([status])
+}
+
+model TimeOff {
+  id        Int      @id @default(autoincrement())
+  doctorId  Int
+  doctor    Doctor   @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  startDate DateTime @db.Date
+  endDate   DateTime @db.Date
+  reason    String?
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+
+  @@index([doctorId])
 }
 
 enum Role {
@@ -91,4 +108,5 @@ enum AppointmentStatus {
   CONFIRMED
   CANCELLED
   COMPLETED
+  NO_SHOW
 }

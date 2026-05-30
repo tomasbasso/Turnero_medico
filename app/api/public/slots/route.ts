@@ -47,7 +47,7 @@ export async function GET(request: NextRequest) {
   const dayOfWeek = targetDate.getDay()
 
   try {
-    const [doctor, existingAppointments] = await Promise.all([
+    const [doctor, existingAppointments, timeOff] = await Promise.all([
       prisma.doctor.findUnique({
         where: { id: doctorId, isActive: true },
         include: { availabilities: { where: { dayOfWeek } } },
@@ -56,14 +56,28 @@ export async function GET(request: NextRequest) {
         where: {
           doctorId,
           date: { gte: targetDate, lt: new Date(year, month - 1, day + 1) },
-          status: { not: 'CANCELLED' },
+          status: { notIn: ['CANCELLED', 'NO_SHOW'] },
         },
         select: { time: true },
+      }),
+      // Blocked day (vacation / holiday / day off): startDate <= target <= endDate
+      prisma.timeOff.findFirst({
+        where: {
+          doctorId,
+          startDate: { lte: targetDate },
+          endDate: { gte: targetDate },
+        },
+        select: { id: true },
       }),
     ])
 
     if (!doctor) {
       return Response.json({ error: 'Médico no encontrado' }, { status: 404 })
+    }
+
+    // Doctor is off this day — no slots available.
+    if (timeOff) {
+      return Response.json({ slots: [] })
     }
 
     const bookedTimes = new Set(existingAppointments.map((a) => a.time))

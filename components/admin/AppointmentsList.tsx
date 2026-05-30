@@ -6,7 +6,7 @@ import { cn, formatDate, formatTime, formatDni, STATUS_LABELS, STATUS_COLORS } f
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-type AppointmentStatus = 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'COMPLETED'
+type AppointmentStatus = 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'COMPLETED' | 'NO_SHOW'
 
 type Doctor = { id: number; name: string }
 
@@ -214,7 +214,7 @@ export function AppointmentsList({ initialData, doctors, role }: AppointmentsLis
             onChange={(e) => setFilters((f) => ({ ...f, status: e.target.value }))}
           >
             <option value="">Todos los estados</option>
-            {(['PENDING', 'CONFIRMED', 'CANCELLED', 'COMPLETED'] as AppointmentStatus[]).map(
+            {(['PENDING', 'CONFIRMED', 'CANCELLED', 'COMPLETED', 'NO_SHOW'] as AppointmentStatus[]).map(
               (s) => (
                 <option key={s} value={s}>
                   {STATUS_LABELS[s]}
@@ -386,24 +386,49 @@ export function AppointmentsList({ initialData, doctors, role }: AppointmentsLis
                       )}
 
                       {appointment.status === 'CONFIRMED' && (
-                        <a
-                          href={buildWhatsAppUrl(appointment)}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          onClick={() => handleWhatsAppClick(appointment.id)}
-                          className="flex items-center justify-end gap-1 text-sm text-accent hover:underline"
-                        >
-                          {appointment.whatsappSent ? (
-                            <MessageCircleCheck className="h-4 w-4 text-accent" />
-                          ) : (
-                            <MessageCircle className="h-4 w-4 text-accent" />
-                          )}
-                          {appointment.whatsappSent ? 'WA enviado' : 'Enviar WA'}
-                        </a>
+                        <div className="flex flex-col items-end gap-1.5">
+                          <a
+                            href={buildWhatsAppUrl(appointment)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={() => handleWhatsAppClick(appointment.id)}
+                            className="flex items-center gap-1 text-sm text-accent hover:underline"
+                          >
+                            {appointment.whatsappSent ? (
+                              <MessageCircleCheck className="h-4 w-4 text-accent" />
+                            ) : (
+                              <MessageCircle className="h-4 w-4 text-accent" />
+                            )}
+                            {appointment.whatsappSent ? 'WA enviado' : 'Enviar WA'}
+                          </a>
+                          <div className="flex items-center gap-2">
+                            <button
+                              className={cn(
+                                'text-sm font-semibold text-teal-700 hover:text-teal-900 transition-colors',
+                                loadingId === appointment.id && 'opacity-50 cursor-not-allowed'
+                              )}
+                              disabled={loadingId === appointment.id}
+                              onClick={() => handleStatusChange(appointment.id, 'COMPLETED')}
+                            >
+                              Completar
+                            </button>
+                            <button
+                              className={cn(
+                                'text-sm font-semibold text-orange-600 hover:text-orange-800 transition-colors',
+                                loadingId === appointment.id && 'opacity-50 cursor-not-allowed'
+                              )}
+                              disabled={loadingId === appointment.id}
+                              onClick={() => handleStatusChange(appointment.id, 'NO_SHOW')}
+                            >
+                              Ausente
+                            </button>
+                          </div>
+                        </div>
                       )}
 
                       {(appointment.status === 'CANCELLED' ||
                         appointment.status === 'COMPLETED' ||
+                        appointment.status === 'NO_SHOW' ||
                         (appointment.status === 'PENDING' && role !== 'ADMIN')) && (
                         <span className="text-xs text-text-muted">—</span>
                       )}

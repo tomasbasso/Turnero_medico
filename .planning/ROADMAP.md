@@ -11,7 +11,7 @@ Stack: Next.js 16 (App Router) + Prisma + PostgreSQL (Supabase) + JWT + Tailwind
 - [x] **Phase 1: Fundación** — Infraestructura base: design system, auth JWT, layouts, login, APIs auth, seed
 - [ ] **Phase 2: Admin** — Panel admin: dashboard, ABM especialidades, ABM médicos, disponibilidad, upload avatar
 - [ ] **Phase 3: Reserva Paciente** — Wizard 5 pasos, generación de slots, APIs públicas, bloqueo doble turno
-- [ ] **Phase 4: Gestión de Turnos** — Lista + filtros, cambio de estado, integración WhatsApp, búsqueda por DNI
+- [x] **Phase 4: Gestión de Turnos** — Lista + filtros, cambio de estado, integración WhatsApp, búsqueda por DNI (completed 2026-05-29)
 - [ ] **Phase 5: Pulido y Deploy** — Dark mode, WCAG AA, rate limiting, deploy Vercel + Supabase
 
 ## Phase Details
@@ -113,15 +113,15 @@ Plans:
 
 **Wave 1**
 
-- [ ] 04-01-PLAN.md — API Layer: GET /api/admin/appointments (list+filters), PATCH /[id] (status), PATCH /[id]/whatsapp (whatsappSent)
+- [x] 04-01-PLAN.md — API Layer: GET /api/admin/appointments (list+filters), PATCH /[id] (status), PATCH /[id]/whatsapp (whatsappSent)
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
-- [ ] 04-02-PLAN.md — AppointmentsList client component: filter bar, table with 5 columns, status actions, WhatsApp link, optimistic updates
+- [x] 04-02-PLAN.md — AppointmentsList client component: filter bar, table with 5 columns, status actions, WhatsApp link, optimistic updates
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
-- [ ] 04-03-PLAN.md — /admin/turnos Server Component page: SSR initial fetch for today, passes initialData+doctors to AppointmentsList
+- [x] 04-03-PLAN.md — /admin/turnos Server Component page: SSR initial fetch for today, passes initialData+doctors to AppointmentsList
 
 ### Phase 5: Pulido y Deploy
 
@@ -143,5 +143,5 @@ Plans:
 | 1. Fundación | 3/3 | Complete | 2026-05-27 |
 | 2. Admin | 0/TBD | Not started | - |
 | 3. Reserva Paciente | 0/5 | Not started | - |
-| 4. Gestión de Turnos | 0/3 | Not started | - |
+| 4. Gestión de Turnos | 3/3 | Complete   | 2026-05-29 |
 | 5. Pulido y Deploy | 0/TBD | Not started | - |
