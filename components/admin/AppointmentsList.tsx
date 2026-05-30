@@ -88,6 +88,7 @@ export function AppointmentsList({ initialData, doctors }: AppointmentsListProps
   // ─── Effect: date / doctorId / status — immediate fetch ─────────────────
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchAppointments(filters)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters.date, filters.doctorId, filters.status])

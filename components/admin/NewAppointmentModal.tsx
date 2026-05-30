@@ -43,6 +43,7 @@ export function NewAppointmentModal({ doctors, onCreated, onClose }: NewAppointm
       const def = DURATION_OPTIONS.includes(doctor.durationMin as DurationOption)
         ? (doctor.durationMin as DurationOption)
         : 20
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setDurationMin(def)
     }
   }, [doctorId, doctors])
@@ -50,6 +51,7 @@ export function NewAppointmentModal({ doctors, onCreated, onClose }: NewAppointm
   // Fetch slots when doctor, date, or duration changes
   useEffect(() => {
     if (!doctorId || !date) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSlots([])
       return
     }
