@@ -1,11 +1,7 @@
-import { headers } from 'next/headers'
 import { prisma } from '@/lib/prisma'
 import { AppointmentsList } from '@/components/admin/AppointmentsList'
 
 export default async function TurnosPage() {
-  const headersList = await headers()
-  const role = headersList.get('x-user-role') as 'ADMIN' | 'RECEPTIONIST'
-
   const today = new Date()
   today.setHours(0, 0, 0, 0)
 
@@ -14,13 +10,13 @@ export default async function TurnosPage() {
       where: { date: today },
       orderBy: [{ date: 'asc' }, { time: 'asc' }],
       include: {
-        doctor: { select: { id: true, name: true } },
+        doctor: { select: { id: true, name: true, durationMin: true } },
       },
     }),
     prisma.doctor.findMany({
       where: { isActive: true },
       orderBy: { name: 'asc' },
-      select: { id: true, name: true },
+      select: { id: true, name: true, durationMin: true },
     }),
   ])
 
@@ -35,7 +31,7 @@ export default async function TurnosPage() {
       <div className="mb-6">
         <h1 className="font-display text-xl font-semibold text-text-primary">Turnos</h1>
       </div>
-      <AppointmentsList initialData={appointments} doctors={doctors} role={role} />
+      <AppointmentsList initialData={appointments} doctors={doctors} />
     </div>
   )
 }

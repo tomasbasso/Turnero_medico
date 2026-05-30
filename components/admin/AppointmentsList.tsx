@@ -1,14 +1,15 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { MessageCircle, MessageCircleCheck, Calendar } from 'lucide-react'
+import { MessageCircle, MessageCircleCheck, Calendar, Plus } from 'lucide-react'
+import { NewAppointmentModal } from '@/components/admin/NewAppointmentModal'
 import { cn, formatDate, formatTime, formatDni, STATUS_LABELS, STATUS_COLORS } from '@/lib/utils'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 type AppointmentStatus = 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'COMPLETED' | 'NO_SHOW'
 
-type Doctor = { id: number; name: string }
+type Doctor = { id: number; name: string; durationMin: number }
 
 type Appointment = {
   id: number
@@ -29,7 +30,6 @@ type Appointment = {
 interface AppointmentsListProps {
   initialData: Appointment[]
   doctors: Doctor[]
-  role: 'ADMIN' | 'RECEPTIONIST'
 }
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -46,7 +46,7 @@ const TAB_FILTERS: Record<Tab, { date: string; doctorId: string; status: string;
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export function AppointmentsList({ initialData, doctors, role }: AppointmentsListProps) {
+export function AppointmentsList({ initialData, doctors }: AppointmentsListProps) {
   const [activeTab, setActiveTab] = useState<Tab>('pendientes')
   const [appointments, setAppointments] = useState<Appointment[]>(initialData)
   const [loading, setLoading] = useState(false)
@@ -55,6 +55,7 @@ export function AppointmentsList({ initialData, doctors, role }: AppointmentsLis
   const [cancellingId, setCancellingId] = useState<number | null>(null)
   const [loadingId, setLoadingId] = useState<number | null>(null)
   const [mutationError, setMutationError] = useState<string | null>(null)
+  const [showNewModal, setShowNewModal] = useState(false)
 
   const dniDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -160,28 +161,37 @@ export function AppointmentsList({ initialData, doctors, role }: AppointmentsLis
   return (
     <div>
       {/* Tabs */}
-      <div className="flex gap-1 mb-6 border-b border-border">
+      <div className="flex items-end justify-between mb-6 border-b border-border">
+        <div className="flex gap-1">
+          <button
+            onClick={() => handleTabChange('pendientes')}
+            className={cn(
+              'px-4 py-2 text-sm font-semibold border-b-2 -mb-px transition-colors',
+              activeTab === 'pendientes'
+                ? 'border-accent text-accent'
+                : 'border-transparent text-text-secondary hover:text-text-primary'
+            )}
+          >
+            Pendientes
+          </button>
+          <button
+            onClick={() => handleTabChange('pordia')}
+            className={cn(
+              'px-4 py-2 text-sm font-semibold border-b-2 -mb-px transition-colors',
+              activeTab === 'pordia'
+                ? 'border-accent text-accent'
+                : 'border-transparent text-text-secondary hover:text-text-primary'
+            )}
+          >
+            Por día
+          </button>
+        </div>
         <button
-          onClick={() => handleTabChange('pendientes')}
-          className={cn(
-            'px-4 py-2 text-sm font-semibold border-b-2 -mb-px transition-colors',
-            activeTab === 'pendientes'
-              ? 'border-accent text-accent'
-              : 'border-transparent text-text-secondary hover:text-text-primary'
-          )}
+          onClick={() => setShowNewModal(true)}
+          className="mb-px flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-accent text-white text-sm font-semibold hover:bg-teal-600 transition-colors"
         >
-          Pendientes
-        </button>
-        <button
-          onClick={() => handleTabChange('pordia')}
-          className={cn(
-            'px-4 py-2 text-sm font-semibold border-b-2 -mb-px transition-colors',
-            activeTab === 'pordia'
-              ? 'border-accent text-accent'
-              : 'border-transparent text-text-secondary hover:text-text-primary'
-          )}
-        >
-          Por día
+          <Plus className="h-4 w-4" />
+          Nuevo turno
         </button>
       </div>
 
@@ -330,7 +340,7 @@ export function AppointmentsList({ initialData, doctors, role }: AppointmentsLis
 
                     {/* Acciones */}
                     <td className="px-6 py-4 align-top w-40">
-                      {appointment.status === 'PENDING' && role === 'ADMIN' && (
+                      {appointment.status === 'PENDING' && (
                         <>
                           {cancellingId === appointment.id ? (
                             <div className="flex flex-col items-end gap-1">
@@ -428,8 +438,7 @@ export function AppointmentsList({ initialData, doctors, role }: AppointmentsLis
 
                       {(appointment.status === 'CANCELLED' ||
                         appointment.status === 'COMPLETED' ||
-                        appointment.status === 'NO_SHOW' ||
-                        (appointment.status === 'PENDING' && role !== 'ADMIN')) && (
+                        appointment.status === 'NO_SHOW') && (
                         <span className="text-xs text-text-muted">—</span>
                       )}
                     </td>
@@ -439,6 +448,17 @@ export function AppointmentsList({ initialData, doctors, role }: AppointmentsLis
             </table>
           )}
         </div>
+      )}
+
+      {showNewModal && (
+        <NewAppointmentModal
+          doctors={doctors}
+          onCreated={() => {
+            setShowNewModal(false)
+            fetchAppointments(filters)
+          }}
+          onClose={() => setShowNewModal(false)}
+        />
       )}
     </div>
   )
