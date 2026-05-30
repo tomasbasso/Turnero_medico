@@ -6,7 +6,6 @@ import { cn, formatTime } from '@/lib/utils'
 
 type Doctor = { id: number; name: string; durationMin: number }
 type Slot = { time: string; available: boolean }
-type DurationOption = 20 | 40 | 60
 
 interface NewAppointmentModalProps {
   doctors: Doctor[]
@@ -17,12 +16,15 @@ interface NewAppointmentModalProps {
 const inputClass =
   'rounded-lg border border-border bg-surface px-3 py-2 text-sm text-text-primary focus:border-[rgba(20,184,166,0.4)] focus:outline-none focus:ring-1 focus:ring-[rgba(20,184,166,0.4)] w-full'
 
-const DURATION_OPTIONS: DurationOption[] = [20, 40, 60]
+// Generate 3 duration options: 1×, 2×, 3× the doctor's native slot size
+function getDurationOptions(base: number): number[] {
+  return [base, base * 2, base * 3]
+}
 
 export function NewAppointmentModal({ doctors, onCreated, onClose }: NewAppointmentModalProps) {
   const [doctorId, setDoctorId] = useState<number | ''>('')
   const [date, setDate] = useState('')
-  const [durationMin, setDurationMin] = useState<DurationOption>(20)
+  const [durationMin, setDurationMin] = useState<number>(20)
   const [time, setTime] = useState<string | null>(null)
   const [slots, setSlots] = useState<Slot[]>([])
   const [slotsLoading, setSlotsLoading] = useState(false)
@@ -35,16 +37,13 @@ export function NewAppointmentModal({ doctors, onCreated, onClose }: NewAppointm
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  // When doctor changes, update default duration to match doctor's slot size
+  // When doctor changes, reset duration to the doctor's native slot size
   useEffect(() => {
     if (doctorId === '') return
     const doctor = doctors.find((d) => d.id === doctorId)
     if (doctor) {
-      const def = DURATION_OPTIONS.includes(doctor.durationMin as DurationOption)
-        ? (doctor.durationMin as DurationOption)
-        : 20
       // eslint-disable-next-line react-hooks/set-state-in-effect
-      setDurationMin(def)
+      setDurationMin(doctor.durationMin)
     }
   }, [doctorId, doctors])
 
@@ -155,7 +154,9 @@ export function NewAppointmentModal({ doctors, onCreated, onClose }: NewAppointm
           <div>
             <label className="block text-xs font-semibold text-text-secondary mb-1">Duración</label>
             <div className="flex gap-2">
-              {DURATION_OPTIONS.map((opt) => (
+              {getDurationOptions(
+                doctors.find((d) => d.id === doctorId)?.durationMin ?? 20
+              ).map((opt) => (
                 <button
                   key={opt}
                   type="button"

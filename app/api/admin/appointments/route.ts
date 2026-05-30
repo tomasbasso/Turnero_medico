@@ -90,8 +90,9 @@ export async function POST(request: NextRequest) {
   if (!time || typeof time !== 'string' || !/^\d{2}:\d{2}$/.test(time)) {
     return Response.json({ error: 'Hora inválida' }, { status: 400 })
   }
-  if (![20, 40, 60].includes(Number(durationMin))) {
-    return Response.json({ error: 'Duración inválida. Valores permitidos: 20, 40, 60.' }, { status: 400 })
+  const reqDurRaw = Number(durationMin)
+  if (!Number.isInteger(reqDurRaw) || reqDurRaw <= 0) {
+    return Response.json({ error: 'Duración inválida.' }, { status: 400 })
   }
   if (!patientName || !String(patientName).trim()) {
     return Response.json({ error: 'El nombre es requerido' }, { status: 400 })
@@ -107,7 +108,6 @@ export async function POST(request: NextRequest) {
 
   const [year, month, day] = date.split('-').map(Number)
   const appointmentDate = new Date(year, month - 1, day)
-  const reqDur = Number(durationMin)
 
   const doctor = await prisma.doctor.findUnique({
     where: { id: Number(doctorId), isActive: true },
@@ -115,6 +115,15 @@ export async function POST(request: NextRequest) {
   if (!doctor) {
     return Response.json({ error: 'Doctor no encontrado' }, { status: 404 })
   }
+
+  // Validate that durationMin is a positive multiple of the doctor's base slot
+  if (reqDurRaw % doctor.durationMin !== 0) {
+    return Response.json(
+      { error: `La duración debe ser múltiplo de ${doctor.durationMin} min.` },
+      { status: 400 }
+    )
+  }
+  const reqDur = reqDurRaw
 
   // Overlap check
   const existing = await prisma.appointment.findMany({
