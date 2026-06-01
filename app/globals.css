@@ -2,7 +2,7 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* ─── Design Tokens ─────────────────────────────────────────────── */
+/* ─── Design Tokens — modo claro ────────────────────────────────── */
 :root {
   /* Canvas */
   --background: #f8fafc;
@@ -20,66 +20,86 @@
   --text-secondary: #64748b;
   --text-muted:     #94a3b8;
 
-  /* Status */
-  --success:   #047857;
-  --warning:   #f59e0b;
-  --error:     #b91c1c;
-  --completed: #64748b;
+  /* Status (fg = texto/borde, bg = fondo tonal del chip) */
+  --status-confirmed:    #0f766e;
+  --status-confirmed-bg: #ccfbf1;
+  --status-pending:      #b45309;
+  --status-pending-bg:   #fef3c7;
+  --status-completed:    #475569;
+  --status-completed-bg: #f1f5f9;
+  --status-cancelled:    #b91c1c;
+  --status-cancelled-bg: #fee2e2;
+  --status-noshow:       #c2410c;
+  --status-noshow-bg:    #ffedd5;
+
+  /* Semantic */
+  --success: #047857;
+  --warning: #b45309;
+  --error:   #b91c1c;
 
   /* Borders (ghost rule — max 40% opacity) */
   --border:       #e2e8f0;
   --border-focus: rgba(13, 148, 136, 0.4);
 
-  /* Shadows */
-  --shadow-sm:  0 4px 6px -1px rgba(15,23,42,0.04), 0 2px 4px -2px rgba(15,23,42,0.03);
-  --shadow-md:  0 20px 25px -5px rgba(13,148,136,0.08), 0 8px 10px -6px rgba(13,148,136,0.05);
+  /* Elevation — 2 capas con tinte teal */
+  --shadow-sm: 0 1px 2px rgba(15,23,42,0.04), 0 12px 28px -16px rgba(13,148,136,0.28);
+  --shadow-md: 0 1px 2px rgba(15,23,42,0.05), 0 24px 48px -16px rgba(13,148,136,0.30);
 
   /* Radius */
-  --radius-sm:   8px;
-  --radius-md:   12px;
+  --radius-sm:   10px;
+  --radius-md:   14px;
+  --radius-lg:   18px;
   --radius-full: 9999px;
+
+  /* Canvas gradient */
+  --canvas-gradient: radial-gradient(120% 120% at 100% 0%, #eef6f5 0%, #f8fafc 45%);
 
   /* Fonts */
   --font-display: var(--font-outfit);
   --font-body:    var(--font-inter);
 }
 
-/* ─── Dark mode tokens ──────────────────────────────────────────── */
+/* ─── Design Tokens — modo oscuro pulido (teal-oscuro cálido) ────── */
 .dark {
-  /* Canvas */
-  --background: #0f172a;
-  --surface:    #1e293b;
-  --foreground: #f1f5f9;
+  --background: #0b1a1a;
+  --surface:    #102826;
+  --foreground: #e7f4f1;
 
-  /* Brand */
   --primary:        #2dd4bf;
   --primary-hover:  #5eead4;
   --primary-light:  #134e4a;
   --accent:         #2dd4bf;
 
-  /* Text */
-  --text-primary:   #f1f5f9;
-  --text-secondary: #94a3b8;
-  --text-muted:     #64748b;
+  --text-primary:   #e7f4f1;
+  --text-secondary: #8fb4af;
+  --text-muted:     #5e8b86;
 
-  /* Status */
-  --success:   #34d399;
-  --warning:   #fbbf24;
-  --error:     #f87171;
-  --completed: #94a3b8;
+  --status-confirmed:    #5eead4;
+  --status-confirmed-bg: rgba(45,212,191,0.16);
+  --status-pending:      #fbbf24;
+  --status-pending-bg:   rgba(251,191,36,0.15);
+  --status-completed:    #8fb4af;
+  --status-completed-bg: rgba(143,180,175,0.14);
+  --status-cancelled:    #f87171;
+  --status-cancelled-bg: rgba(248,113,113,0.15);
+  --status-noshow:       #fb923c;
+  --status-noshow-bg:    rgba(251,146,60,0.15);
 
-  /* Borders */
-  --border:       rgba(148, 163, 184, 0.15);
+  --success: #34d399;
+  --warning: #fbbf24;
+  --error:   #f87171;
+
+  --border:       #1e433f;
   --border-focus: rgba(45, 212, 191, 0.4);
 
-  /* Shadows */
-  --shadow-sm: 0 4px 6px -1px rgba(0,0,0,0.3), 0 2px 4px -2px rgba(0,0,0,0.2);
-  --shadow-md: 0 20px 25px -5px rgba(0,0,0,0.4), 0 8px 10px -6px rgba(0,0,0,0.3);
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.4), 0 14px 30px -18px rgba(0,0,0,0.6);
+  --shadow-md: 0 1px 2px rgba(0,0,0,0.5), 0 28px 56px -18px rgba(0,0,0,0.7);
+
+  --canvas-gradient: radial-gradient(120% 120% at 100% 0%, #11302d 0%, #0b1a1a 55%);
 }
 
 /* ─── Tailwind v4 theme map ─────────────────────────────────────── */
 @theme inline {
-  /* Colors */
   --color-background:     var(--background);
   --color-surface:        var(--surface);
   --color-foreground:     var(--foreground);
@@ -93,19 +113,27 @@
   --color-success:        var(--success);
   --color-warning:        var(--warning);
   --color-error:          var(--error);
-  --color-completed:      var(--completed);
   --color-border:         var(--border);
 
-  /* Shadows */
+  --color-status-confirmed:    var(--status-confirmed);
+  --color-status-confirmed-bg: var(--status-confirmed-bg);
+  --color-status-pending:      var(--status-pending);
+  --color-status-pending-bg:   var(--status-pending-bg);
+  --color-status-completed:    var(--status-completed);
+  --color-status-completed-bg: var(--status-completed-bg);
+  --color-status-cancelled:    var(--status-cancelled);
+  --color-status-cancelled-bg: var(--status-cancelled-bg);
+  --color-status-noshow:       var(--status-noshow);
+  --color-status-noshow-bg:    var(--status-noshow-bg);
+
   --shadow-card:  var(--shadow-sm);
   --shadow-modal: var(--shadow-md);
 
-  /* Border radius */
   --radius-sm:   var(--radius-sm);
   --radius-md:   var(--radius-md);
+  --radius-lg:   var(--radius-lg);
   --radius-full: var(--radius-full);
 
-  /* Fonts */
   --font-display: var(--font-display);
   --font-body:    var(--font-body);
   --font-sans:    var(--font-inter);
@@ -114,6 +142,8 @@
 /* ─── Base ──────────────────────────────────────────────────────── */
 body {
   background-color: var(--background);
+  background-image: var(--canvas-gradient);
+  background-attachment: fixed;
   color: var(--text-primary);
   font-family: var(--font-body), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -122,6 +152,7 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display), system-ui, sans-serif;
+  letter-spacing: -0.02em;
 }
 
 /* ─── Focus ring global (WCAG AA — teclado visible) ────────────── */
@@ -142,6 +173,35 @@ select:focus:not(:focus-visible),
 textarea:focus:not(:focus-visible),
 [tabindex]:focus:not(:focus-visible) {
   outline: none;
+}
+
+/* ─── Utilidades de marca ───────────────────────────────────────── */
+@layer utilities {
+  /* Botón primario: degradé vertical + sombra de color */
+  .btn-primary {
+    background-image: linear-gradient(180deg, var(--accent), var(--primary));
+    color: #ffffff;
+    box-shadow: 0 6px 16px -6px color-mix(in srgb, var(--primary) 55%, transparent);
+  }
+  .dark .btn-primary { color: #04211e; }
+  .btn-primary:hover { filter: brightness(1.05); }
+  .btn-primary:active { filter: brightness(0.97); }
+  .btn-primary:disabled { opacity: 0.6; box-shadow: none; cursor: not-allowed; }
+
+  /* Halo de foco para inputs (complementa el focus-visible global) */
+  .input-focus:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 22%, transparent);
+  }
+
+  /* Hover lift para tarjetas interactivas */
+  .card-lift { transition: transform .15s ease, box-shadow .15s ease; }
+  .card-lift:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card-lift { transition: none; }
+  .card-lift:hover { transform: none; }
 }
 
 /* ─── Scrollbar (thin, branded) ─────────────────────────────────── */
