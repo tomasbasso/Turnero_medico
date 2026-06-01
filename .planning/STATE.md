@@ -16,17 +16,19 @@ progress:
 
 ## Current Focus
 
-Phase 4: Gestión de Turnos
+Phase 5: Pulido y Deploy (local-only; deploy diferido)
 
 ## Last Session
 
-- Stopped at: Phase 4 context gathered
-- Resume file: .planning/phases/04-gestion-turnos/04-CONTEXT.md
+- Stopped at: Phase 5 context gathered
+- Resume file: .planning/phases/05-pulido-y-deploy/05-CONTEXT.md
+- Next: /gsd-plan-phase 5
 
 ## Phase Status
 
 - Phase 1 (Fundación): **Complete** (2026-05-27)
 - Phase 2 (Admin): **Complete** (2026-05-27)
 - Phase 3 (Reserva Paciente): **Complete** (2026-05-28)
-- Phase 4 (Gestión de Turnos): **Not started**
-- Phase 5 (Pulido y Deploy): **Not started**
+- Phase 4 (Gestión de Turnos): **Complete** (2026-05-29)
+- Carga manual de turnos (extra): **Complete** (2026-05-30)
+- Phase 5 (Pulido y Deploy): **Context gathered** — dark mode, WCAG AA, rate limiting (local); deploy diferido
