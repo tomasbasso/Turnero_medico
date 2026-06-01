@@ -125,16 +125,26 @@ Plans:
 
 ### Phase 5: Pulido y Deploy
 
-**Goal**: App production-ready: accesibilidad, seguridad básica y desplegada en Vercel + Supabase.
+**Goal**: App production-ready en su capa de pulido y seguridad básica, funcionando en LOCAL — dark mode, accesibilidad WCAG AA y rate limiting. El deploy a Vercel + Supabase prod queda diferido a una sesión posterior (decisión del usuario); el código queda listo para ello (env vars documentadas).
 **Depends on**: Phase 4
 **Success Criteria** (what must be TRUE):
 
-  1. Dark mode funcional
-  2. Contraste WCAG AA en todos los componentes
-  3. Rate limiting en endpoints críticos (login, reserva)
-  4. App desplegada y accesible en Vercel
+  1. Dark mode funcional en toda la app (admin + wizard público), con anti-FOUC y persistencia
+  2. Contraste WCAG AA, focus states, focus trap en overlays y ARIA en interactivos
+  3. Rate limiting en endpoints críticos (login, reserva) con fallback in-memory local
 
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+
+**Wave 1** *(parallel — no dependencies)*
+
+- [ ] 05-01-PLAN.md — Rate limiting: lib/rate-limit.ts (Upstash + fallback in-memory) + Vitest + tests + integración en login y reserva (D-08..D-12, RATE-01..03)
+- [ ] 05-02-PLAN.md — Dark mode: @custom-variant + tokens .dark + anti-FOUC + ThemeToggle/PublicHeader + glassmorphism wizard (D-01..D-05)
+
+**Wave 2** *(blocked on Wave 1 — comparte app/globals.css con 05-02)*
+
+- [ ] 05-03-PLAN.md — WCAG AA: tokens contrast (--success/--error) + focus rings + focus trap/Escape/ARIA en Drawer y NewAppointmentModal (D-06, D-07)
 
 ## Progress
 
@@ -144,4 +154,4 @@ Plans:
 | 2. Admin | 0/TBD | Not started | - |
 | 3. Reserva Paciente | 0/5 | Not started | - |
 | 4. Gestión de Turnos | 3/3 | Complete   | 2026-05-29 |
-| 5. Pulido y Deploy | 0/TBD | Not started | - |
+| 5. Pulido y Deploy | 0/3 | Planned | - |
