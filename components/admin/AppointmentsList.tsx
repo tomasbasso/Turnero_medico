@@ -189,7 +189,7 @@ export function AppointmentsList({ initialData, doctors }: AppointmentsListProps
         </div>
         <button
           onClick={() => setShowNewModal(true)}
-          className="mb-px flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-accent text-white text-sm font-semibold hover:bg-teal-600 transition-colors"
+          className="btn-primary mb-px flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-sm font-semibold"
         >
           <Plus className="h-4 w-4" />
           Nuevo turno
@@ -245,7 +245,7 @@ export function AppointmentsList({ initialData, doctors }: AppointmentsListProps
 
       {/* Mutation error */}
       {mutationError && (
-        <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm text-error">
+        <div className="mb-4 rounded-lg border border-error/20 bg-error/10 px-4 py-2 text-sm text-error">
           {mutationError}
         </div>
       )}
@@ -369,7 +369,7 @@ export function AppointmentsList({ initialData, doctors }: AppointmentsListProps
                             <div className="flex items-center justify-end gap-2">
                               <button
                                 className={cn(
-                                  'text-sm font-semibold text-teal-700 hover:text-teal-900 transition-colors',
+                                  'text-sm font-semibold text-primary hover:text-primary-hover transition-colors',
                                   loadingId === appointment.id &&
                                     'opacity-50 cursor-not-allowed'
                                 )}
@@ -382,7 +382,7 @@ export function AppointmentsList({ initialData, doctors }: AppointmentsListProps
                               </button>
                               <button
                                 className={cn(
-                                  'text-sm font-semibold text-error hover:text-red-700 transition-colors',
+                                  'text-sm font-semibold text-error hover:opacity-80 transition-opacity',
                                   loadingId === appointment.id &&
                                     'opacity-50 cursor-not-allowed'
                                 )}
@@ -415,7 +415,7 @@ export function AppointmentsList({ initialData, doctors }: AppointmentsListProps
                           <div className="flex items-center gap-2">
                             <button
                               className={cn(
-                                'text-sm font-semibold text-teal-700 hover:text-teal-900 transition-colors',
+                                'text-sm font-semibold text-primary hover:text-primary-hover transition-colors',
                                 loadingId === appointment.id && 'opacity-50 cursor-not-allowed'
                               )}
                               disabled={loadingId === appointment.id}

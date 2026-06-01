@@ -52,7 +52,7 @@ export function SpecialtiesList({ specialties, role }: SpecialtiesListProps) {
         <div className="flex justify-end mb-6">
           <button
             onClick={openCreate}
-            className="rounded-lg bg-gradient-to-r from-primary to-accent px-4 py-2 text-sm font-semibold text-white hover:shadow-[0_0_12px_rgba(20,184,166,0.4)] transition-all duration-150"
+            className="btn-primary rounded-lg px-4 py-2 text-sm font-semibold transition-all duration-150"
           >
             Crear especialidad
           </button>
@@ -68,7 +68,7 @@ export function SpecialtiesList({ specialties, role }: SpecialtiesListProps) {
           {role === 'ADMIN' && (
             <button
               onClick={openCreate}
-              className="rounded-lg bg-gradient-to-r from-primary to-accent px-4 py-2 text-sm font-semibold text-white hover:shadow-[0_0_12px_rgba(20,184,166,0.4)] transition-all duration-150"
+              className="btn-primary rounded-lg px-4 py-2 text-sm font-semibold transition-all duration-150"
             >
               Crear especialidad
             </button>

@@ -60,7 +60,7 @@ export function DoctorsList({ doctors, specialties, role }: DoctorsListProps) {
         <div className="flex justify-end mb-6">
           <button
             onClick={openCreate}
-            className="rounded-lg bg-gradient-to-r from-primary to-accent px-4 py-2 text-sm font-semibold text-white hover:shadow-[0_0_12px_rgba(20,184,166,0.4)] transition-all duration-150"
+            className="btn-primary rounded-lg px-4 py-2 text-sm font-semibold transition-all duration-150"
           >
             Crear médico
           </button>
@@ -76,7 +76,7 @@ export function DoctorsList({ doctors, specialties, role }: DoctorsListProps) {
           {role === 'ADMIN' && (
             <button
               onClick={openCreate}
-              className="rounded-lg bg-gradient-to-r from-primary to-accent px-4 py-2 text-sm font-semibold text-white hover:shadow-[0_0_12px_rgba(20,184,166,0.4)] transition-all duration-150"
+              className="btn-primary rounded-lg px-4 py-2 text-sm font-semibold transition-all duration-150"
             >
               Crear médico
             </button>
@@ -110,7 +110,7 @@ export function DoctorsList({ doctors, specialties, role }: DoctorsListProps) {
                     className="h-2 w-2 rounded-full flex-shrink-0"
                     style={{ backgroundColor: doctor.specialty.color }}
                   />
-                  <span className="text-xs bg-teal-100 text-teal-700 rounded-full px-2 py-0.5">
+                  <span className="text-xs bg-primary-light text-primary rounded-full px-2 py-0.5">
                     {doctor.specialty.name}
                   </span>
                 </div>

@@ -56,7 +56,7 @@ export function SpecialtyForm({ specialty, onClose }: SpecialtyFormProps) {
   }
 
   const inputClass =
-    'w-full rounded-lg border border-border bg-white px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-[rgba(13,148,136,0.4)] focus:ring-2 focus:ring-[rgba(13,148,136,0.2)] transition-all'
+    'input-focus w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm text-text-primary outline-none transition-all'
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -97,7 +97,7 @@ export function SpecialtyForm({ specialty, onClose }: SpecialtyFormProps) {
       </div>
 
       {error && (
-        <p className="rounded-lg bg-red-50 px-4 py-2.5 text-sm text-error">{error}</p>
+        <p className="rounded-lg bg-error/10 px-4 py-2.5 text-sm text-error">{error}</p>
       )}
 
       <div className="flex gap-3 pt-2">
@@ -111,7 +111,7 @@ export function SpecialtyForm({ specialty, onClose }: SpecialtyFormProps) {
         <button
           type="submit"
           disabled={loading}
-          className="flex-1 rounded-lg bg-gradient-to-r from-primary to-accent px-4 py-2 text-sm font-semibold text-white transition-all duration-150 hover:shadow-[0_0_12px_rgba(20,184,166,0.4)] disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none"
+          className="btn-primary flex-1 rounded-lg px-4 py-2 text-sm font-semibold transition-all duration-150 disabled:pointer-events-none"
         >
           {loading ? (
             <Loader2 className="h-4 w-4 animate-spin mx-auto" />

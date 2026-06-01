@@ -109,7 +109,7 @@ export function NewAppointmentModal({ doctors, onCreated, onClose }: NewAppointm
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
       <FocusTrap
         focusTrapOptions={{
           initialFocus: false,
@@ -308,7 +308,7 @@ export function NewAppointmentModal({ doctors, onCreated, onClose }: NewAppointm
             </div>
 
             {error && (
-              <p className="text-sm text-error bg-red-50 border border-red-200 rounded-lg px-4 py-2">
+              <p className="text-sm text-error bg-error/10 border border-error/20 rounded-lg px-4 py-2">
                 {error}
               </p>
             )}
@@ -325,10 +325,8 @@ export function NewAppointmentModal({ doctors, onCreated, onClose }: NewAppointm
                 type="submit"
                 disabled={loading || !time}
                 className={cn(
-                  'px-5 py-2 rounded-lg bg-accent text-white text-sm font-semibold transition-colors',
-                  loading || !time
-                    ? 'opacity-50 cursor-not-allowed'
-                    : 'hover:bg-teal-600'
+                  'btn-primary px-5 py-2 rounded-lg text-sm font-semibold',
+                  (loading || !time) && 'opacity-50 cursor-not-allowed'
                 )}
               >
                 {loading ? 'Guardando...' : 'Guardar turno'}
