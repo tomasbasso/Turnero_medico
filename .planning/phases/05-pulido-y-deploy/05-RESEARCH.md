@@ -722,7 +722,7 @@ export async function POST(request: NextRequest) {
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **¿Header público existe o hay que crearlo?**
    - Lo que sabemos: `app/(public)/layout.tsx` solo tiene un `<div className="min-h-screen bg-background">`. No hay header.
