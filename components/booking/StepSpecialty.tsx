@@ -35,7 +35,7 @@ export function StepSpecialty({
       {loading && (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="bg-slate-200 animate-pulse rounded-xl h-24" />
+            <div key={i} className="bg-border animate-pulse rounded-xl h-24" />
           ))}
         </div>
       )}
@@ -81,8 +81,8 @@ export function StepSpecialty({
                 }
               }}
               className={cn(
-                'bg-white/70 backdrop-blur-sm rounded-xl shadow-card border p-4 flex flex-col items-center gap-2 cursor-pointer transition-all duration-200',
-                'hover:border-accent/40 hover:shadow-modal',
+                'card-lift bg-surface/70 backdrop-blur-sm rounded-xl shadow-card border p-4 flex flex-col items-center gap-2 cursor-pointer',
+                'hover:border-accent/40',
                 'border-border'
               )}
             >

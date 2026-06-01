@@ -95,7 +95,7 @@ export function StepPatientForm({
   }
 
   const inputClass =
-    'w-full rounded-lg border border-border bg-white/90 px-3 py-3 min-h-[44px] text-base text-text-primary placeholder:text-text-muted focus:outline-none focus:border-[rgba(13,148,136,0.4)] focus:ring-2 focus:ring-[rgba(13,148,136,0.2)]'
+    'input-focus w-full rounded-lg border border-border bg-surface/90 px-3 py-3 min-h-[44px] text-base text-text-primary placeholder:text-text-muted outline-none'
 
   return (
     <form onSubmit={handleSubmit}>
@@ -179,7 +179,7 @@ export function StepPatientForm({
         </div>
 
         {error && (
-          <div role="alert" className="text-sm text-error bg-red-50 border border-red-200 rounded-lg px-4 py-3">
+          <div role="alert" className="text-sm text-error bg-error/10 border border-error/20 rounded-lg px-4 py-3">
             {error}
             {error.includes('reservado') && (
               <button
@@ -197,7 +197,7 @@ export function StepPatientForm({
           type="submit"
           disabled={loading}
           className={cn(
-            'w-full rounded-lg bg-gradient-to-r from-primary to-accent py-3 text-sm font-semibold text-white transition-all hover:shadow-[0_0_12px_rgba(20,184,166,0.4)] hover:opacity-90 disabled:opacity-60 disabled:cursor-not-allowed mt-2'
+            'btn-primary w-full rounded-lg py-3 text-sm font-semibold transition-all mt-2'
           )}
         >
           {loading ? (

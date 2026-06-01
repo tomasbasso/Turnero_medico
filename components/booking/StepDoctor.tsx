@@ -46,7 +46,7 @@ export function StepDoctor({
       {loading && (
         <div className="flex flex-col gap-3">
           {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="bg-slate-200 animate-pulse rounded-xl h-20" />
+            <div key={i} className="bg-border animate-pulse rounded-xl h-20" />
           ))}
         </div>
       )}
@@ -86,7 +86,7 @@ export function StepDoctor({
                 }
               }}
               className={cn(
-                'bg-white/70 backdrop-blur-sm rounded-xl shadow-card border border-border p-4 flex items-start gap-3 cursor-pointer transition-all duration-200 hover:border-accent/40 hover:shadow-modal'
+                'card-lift bg-surface/70 backdrop-blur-sm rounded-xl shadow-card border border-border p-4 flex items-start gap-3 cursor-pointer hover:border-accent/40'
               )}
             >
               {doctor.avatar ? (

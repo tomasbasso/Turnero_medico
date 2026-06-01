@@ -119,7 +119,7 @@ export function StepDateTime({
       </h2>
       <p className="text-sm text-text-secondary mb-4">Dr./Dra. {doctorName}</p>
 
-      <div className="bg-white/60 backdrop-blur-sm rounded-xl border border-border p-4 mb-4">
+      <div className="bg-surface/60 backdrop-blur-sm rounded-xl border border-border p-4 mb-4">
         <div className="flex justify-between items-center mb-3">
           <button
             onClick={handlePrevMonth}
@@ -169,7 +169,7 @@ export function StepDateTime({
                 key={d}
                 className={cn(
                   'w-10 h-10 flex items-center justify-center rounded-lg text-sm relative',
-                  selected && 'bg-gradient-to-br from-primary to-accent text-white font-semibold shadow-sm',
+                  selected && 'btn-primary font-semibold',
                   !selected && available && 'bg-primary/10 text-primary font-semibold cursor-pointer hover:bg-primary/20',
                   !available && 'text-text-muted cursor-not-allowed'
                 )}
@@ -212,7 +212,7 @@ export function StepDateTime({
         {selectedDate && loadingSlots && (
           <div className="grid grid-cols-4 gap-2 sm:grid-cols-5">
             {Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} className="bg-slate-200 animate-pulse rounded-full h-10 w-20" />
+              <div key={i} className="bg-border animate-pulse rounded-full h-10 w-20" />
             ))}
           </div>
         )}
@@ -250,10 +250,10 @@ export function StepDateTime({
                   className={cn(
                     'rounded-full px-3 py-2 text-sm font-semibold min-h-[44px] flex items-center justify-center transition-all duration-150',
                     selectedTime === slot.time
-                      ? 'bg-gradient-to-r from-primary to-accent text-white shadow-sm'
+                      ? 'btn-primary'
                       : slot.available
                         ? 'border border-accent/40 text-primary bg-primary/10 cursor-pointer hover:bg-primary/20'
-                        : 'bg-slate-100 text-text-muted border border-border cursor-not-allowed opacity-60'
+                        : 'bg-background text-text-muted border border-border cursor-not-allowed opacity-60'
                   )}
                 >
                   {slot.time}
@@ -270,8 +270,8 @@ export function StepDateTime({
         className={cn(
           'w-full rounded-lg py-3 text-sm font-semibold transition-all mt-6',
           selectedDate && selectedTime
-            ? 'bg-gradient-to-r from-primary to-accent text-white hover:shadow-[0_0_12px_rgba(20,184,166,0.4)]'
-            : 'opacity-50 cursor-not-allowed bg-slate-200 text-text-muted'
+            ? 'btn-primary'
+            : 'opacity-50 cursor-not-allowed bg-border text-text-muted'
         )}
       >
         Confirmar horario

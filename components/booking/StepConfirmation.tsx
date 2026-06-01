@@ -59,7 +59,7 @@ export function StepConfirmation({
       </div>
 
       <div className="mt-4 flex flex-col items-center gap-2">
-        <span className="bg-amber-100 text-amber-700 rounded-full px-3 py-1 text-sm font-semibold">
+        <span className="bg-status-pending-bg text-status-pending rounded-full px-3 py-1 text-sm font-semibold">
           PENDIENTE
         </span>
         <p className="text-sm text-text-secondary text-center">
