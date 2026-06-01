@@ -32,15 +32,15 @@ export function AdminSidebar() {
   }
 
   return (
-    <aside className="flex h-full w-56 flex-col bg-slate-900 text-slate-100">
+    <aside className="flex h-full w-56 flex-col border-r border-border bg-surface text-text-primary">
       {/* Logo */}
-      <div className="flex items-center gap-3 px-5 py-5 border-b border-slate-800">
+      <div className="flex items-center gap-3 px-5 py-5 border-b border-border">
         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-accent">
           <svg className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-3-3v6M12 3v2m0 14v2M3 12h2m14 0h2" />
           </svg>
         </div>
-        <span className="font-display text-sm font-semibold text-white">Turnero Médico</span>
+        <span className="font-display text-sm font-semibold text-text-primary">Turnero Médico</span>
       </div>
 
       {/* Navigation */}
@@ -54,8 +54,8 @@ export function AdminSidebar() {
               className={cn(
                 'flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium transition-colors',
                 active
-                  ? 'bg-primary/20 text-accent'
-                  : 'text-slate-400 hover:bg-slate-800 hover:text-slate-100',
+                  ? 'bg-primary-light text-primary'
+                  : 'text-text-secondary hover:bg-primary-light hover:text-primary',
               )}
             >
               <Icon className="h-4 w-4 flex-shrink-0" />
@@ -66,21 +66,21 @@ export function AdminSidebar() {
       </nav>
 
       {/* Footer */}
-      <div className="border-t border-slate-800 p-3">
+      <div className="border-t border-border p-3">
         <div className="mb-2 px-3 py-2">
-          <p className="text-xs text-slate-500">Estado del Sistema</p>
+          <p className="text-xs text-text-muted">Estado del Sistema</p>
           <div className="mt-1 flex items-center gap-1.5">
             <span className="h-1.5 w-1.5 rounded-full bg-success" />
-            <span className="text-xs text-slate-400">Operativo</span>
+            <span className="text-xs text-text-secondary">Operativo</span>
           </div>
         </div>
         <div className="flex items-center justify-between px-1 pb-1">
-          <span className="px-2 text-xs text-slate-500">Tema</span>
+          <span className="px-2 text-xs text-text-muted">Tema</span>
           <ThemeToggle />
         </div>
         <button
           onClick={handleLogout}
-          className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium text-slate-400 transition-colors hover:bg-slate-800 hover:text-error"
+          className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium text-text-secondary transition-colors hover:bg-error/10 hover:text-error"
         >
           <LogOut className="h-4 w-4" />
           Cerrar sesión
