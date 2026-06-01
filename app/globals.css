@@ -21,9 +21,9 @@
   --text-muted:     #94a3b8;
 
   /* Status */
-  --success:   #10b981;
+  --success:   #047857;
   --warning:   #f59e0b;
-  --error:     #ef4444;
+  --error:     #b91c1c;
   --completed: #64748b;
 
   /* Borders (ghost rule — max 40% opacity) */
@@ -122,6 +122,26 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display), system-ui, sans-serif;
+}
+
+/* ─── Focus ring global (WCAG AA — teclado visible) ────────────── */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}
+
+a:focus:not(:focus-visible),
+button:focus:not(:focus-visible),
+input:focus:not(:focus-visible),
+select:focus:not(:focus-visible),
+textarea:focus:not(:focus-visible),
+[tabindex]:focus:not(:focus-visible) {
+  outline: none;
 }
 
 /* ─── Scrollbar (thin, branded) ─────────────────────────────────── */
