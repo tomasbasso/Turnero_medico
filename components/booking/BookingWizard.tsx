@@ -59,7 +59,7 @@ export function BookingWizard() {
           <div className="absolute -bottom-40 -left-40 h-96 w-96 rounded-full bg-primary opacity-10 dark:opacity-5 blur-3xl" />
         </div>
 
-        <div className="relative w-full max-w-2xl bg-white/80 dark:bg-slate-900/80 backdrop-blur-md rounded-2xl shadow-modal border border-accent/20 p-6">
+        <div className="relative w-full max-w-2xl bg-surface/80 backdrop-blur-md rounded-2xl shadow-modal border border-accent/20 p-6">
           <StepProgress currentStep={step} />
 
           {step > 1 && step < 5 && (
