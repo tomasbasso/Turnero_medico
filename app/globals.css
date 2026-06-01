@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* ─── Design Tokens ─────────────────────────────────────────────── */
 :root {
   /* Canvas */
@@ -40,6 +42,39 @@
   /* Fonts */
   --font-display: var(--font-outfit);
   --font-body:    var(--font-inter);
+}
+
+/* ─── Dark mode tokens ──────────────────────────────────────────── */
+.dark {
+  /* Canvas */
+  --background: #0f172a;
+  --surface:    #1e293b;
+  --foreground: #f1f5f9;
+
+  /* Brand */
+  --primary:        #2dd4bf;
+  --primary-hover:  #5eead4;
+  --primary-light:  #134e4a;
+  --accent:         #2dd4bf;
+
+  /* Text */
+  --text-primary:   #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted:     #64748b;
+
+  /* Status */
+  --success:   #34d399;
+  --warning:   #fbbf24;
+  --error:     #f87171;
+  --completed: #94a3b8;
+
+  /* Borders */
+  --border:       rgba(148, 163, 184, 0.15);
+  --border-focus: rgba(45, 212, 191, 0.4);
+
+  /* Shadows */
+  --shadow-sm: 0 4px 6px -1px rgba(0,0,0,0.3), 0 2px 4px -2px rgba(0,0,0,0.2);
+  --shadow-md: 0 20px 25px -5px rgba(0,0,0,0.4), 0 8px 10px -6px rgba(0,0,0,0.3);
 }
 
 /* ─── Tailwind v4 theme map ─────────────────────────────────────── */
