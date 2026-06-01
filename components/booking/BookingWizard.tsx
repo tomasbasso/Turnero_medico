@@ -55,11 +55,11 @@ export function BookingWizard() {
     <div className="min-h-screen bg-background flex items-start justify-center px-4 py-16">
       <div className="relative w-full max-w-2xl">
         <div className="pointer-events-none fixed inset-0 overflow-hidden" aria-hidden="true">
-          <div className="absolute -top-40 -right-40 h-96 w-96 rounded-full bg-accent opacity-10 blur-3xl" />
-          <div className="absolute -bottom-40 -left-40 h-96 w-96 rounded-full bg-primary opacity-10 blur-3xl" />
+          <div className="absolute -top-40 -right-40 h-96 w-96 rounded-full bg-accent opacity-10 dark:opacity-5 blur-3xl" />
+          <div className="absolute -bottom-40 -left-40 h-96 w-96 rounded-full bg-primary opacity-10 dark:opacity-5 blur-3xl" />
         </div>
 
-        <div className="relative w-full max-w-2xl bg-white/80 backdrop-blur-md rounded-2xl shadow-modal border border-accent/20 p-6">
+        <div className="relative w-full max-w-2xl bg-white/80 dark:bg-slate-900/80 backdrop-blur-md rounded-2xl shadow-modal border border-accent/20 p-6">
           <StepProgress currentStep={step} />
 
           {step > 1 && step < 5 && (
