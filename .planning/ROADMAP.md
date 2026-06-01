@@ -12,7 +12,7 @@ Stack: Next.js 16 (App Router) + Prisma + PostgreSQL (Supabase) + JWT + Tailwind
 - [ ] **Phase 2: Admin** — Panel admin: dashboard, ABM especialidades, ABM médicos, disponibilidad, upload avatar
 - [ ] **Phase 3: Reserva Paciente** — Wizard 5 pasos, generación de slots, APIs públicas, bloqueo doble turno
 - [x] **Phase 4: Gestión de Turnos** — Lista + filtros, cambio de estado, integración WhatsApp, búsqueda por DNI (completed 2026-05-29)
-- [ ] **Phase 5: Pulido y Deploy** — Dark mode, WCAG AA, rate limiting, deploy Vercel + Supabase
+- [x] **Phase 5: Pulido y Deploy** — Dark mode, WCAG AA, rate limiting, deploy Vercel + Supabase (completed 2026-06-01)
 
 ## Phase Details
 
@@ -139,12 +139,12 @@ Plans:
 
 **Wave 1** *(parallel — no dependencies)*
 
-- [ ] 05-01-PLAN.md — Rate limiting: lib/rate-limit.ts (Upstash + fallback in-memory) + Vitest + tests + integración en login y reserva (D-08..D-12, RATE-01..03)
-- [ ] 05-02-PLAN.md — Dark mode: @custom-variant + tokens .dark + anti-FOUC + ThemeToggle/PublicHeader + glassmorphism wizard (D-01..D-05)
+- [x] 05-01-PLAN.md — Rate limiting: lib/rate-limit.ts (Upstash + fallback in-memory) + Vitest + tests + integración en login y reserva (D-08..D-12, RATE-01..03)
+- [x] 05-02-PLAN.md — Dark mode: @custom-variant + tokens .dark + anti-FOUC + ThemeToggle/PublicHeader + glassmorphism wizard (D-01..D-05)
 
 **Wave 2** *(blocked on Wave 1 — comparte app/globals.css con 05-02)*
 
-- [ ] 05-03-PLAN.md — WCAG AA: tokens contrast (--success/--error) + focus rings + focus trap/Escape/ARIA en Drawer y NewAppointmentModal (D-06, D-07)
+- [x] 05-03-PLAN.md — WCAG AA: tokens contrast (--success/--error) + focus rings + focus trap/Escape/ARIA en Drawer y NewAppointmentModal (D-06, D-07)
 
 ## Progress
 
@@ -154,4 +154,4 @@ Plans:
 | 2. Admin | 0/TBD | Not started | - |
 | 3. Reserva Paciente | 0/5 | Not started | - |
 | 4. Gestión de Turnos | 3/3 | Complete   | 2026-05-29 |
-| 5. Pulido y Deploy | 0/3 | Planned | - |
+| 5. Pulido y Deploy | 3/3 | Complete    | 2026-06-01 |
