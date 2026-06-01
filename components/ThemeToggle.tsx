@@ -29,7 +29,7 @@ export function ThemeToggle({ className }: { className?: string }) {
       aria-label={dark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
       className={cn(
         'flex items-center justify-center rounded-lg p-2 transition-colors',
-        'text-slate-400 hover:bg-slate-800 hover:text-slate-100',
+        'text-text-muted hover:bg-primary-light hover:text-primary',
         className
       )}
     >
