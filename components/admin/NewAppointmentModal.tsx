@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { X } from 'lucide-react'
+import FocusTrap from 'focus-trap-react'
 import { cn, formatTime } from '@/lib/utils'
 
 type Doctor = { id: number; name: string; durationMin: number }
@@ -36,6 +37,15 @@ export function NewAppointmentModal({ doctors, onCreated, onClose }: NewAppointm
   const [notes, setNotes] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  // Close on Escape
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose()
+    }
+    document.addEventListener('keydown', handleEscape)
+    return () => document.removeEventListener('keydown', handleEscape)
+  }, [onClose])
 
   // When doctor changes, reset duration to the doctor's native slot size
   useEffect(() => {
@@ -100,214 +110,233 @@ export function NewAppointmentModal({ doctors, onCreated, onClose }: NewAppointm
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-      <div className="relative w-full max-w-lg rounded-2xl bg-background shadow-xl overflow-y-auto max-h-[90vh]">
-        {/* Header */}
-        <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-border">
-          <h2 className="font-display text-lg font-semibold text-text-primary">Nuevo turno</h2>
-          <button
-            type="button"
-            onClick={onClose}
-            className="text-text-secondary hover:text-text-primary transition-colors"
-          >
-            <X className="h-5 w-5" />
-          </button>
-        </div>
-
-        <form onSubmit={handleSubmit} className="px-6 py-5 space-y-4">
-          {/* Doctor */}
-          <div>
-            <label className="block text-xs font-semibold text-text-secondary mb-1">Doctor</label>
-            <select
-              className={inputClass}
-              value={doctorId}
-              onChange={(e) => {
-                setDoctorId(e.target.value ? Number(e.target.value) : '')
-                setTime(null)
-              }}
-              required
+      <FocusTrap
+        focusTrapOptions={{
+          initialFocus: false,
+          allowOutsideClick: true,
+          escapeDeactivates: false,
+        }}
+      >
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="new-appointment-title"
+          className="relative w-full max-w-lg rounded-2xl bg-background shadow-xl overflow-y-auto max-h-[90vh]"
+        >
+          {/* Header */}
+          <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-border">
+            <h2
+              id="new-appointment-title"
+              className="font-display text-lg font-semibold text-text-primary"
             >
-              <option value="">Seleccioná un doctor</option>
-              {doctors.map((d) => (
-                <option key={d.id} value={d.id}>
-                  {d.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Fecha */}
-          <div>
-            <label className="block text-xs font-semibold text-text-secondary mb-1">Fecha</label>
-            <input
-              type="date"
-              className={inputClass}
-              value={date}
-              onChange={(e) => {
-                setDate(e.target.value)
-                setTime(null)
-              }}
-              required
-            />
-          </div>
-
-          {/* Duración */}
-          <div>
-            <label className="block text-xs font-semibold text-text-secondary mb-1">Duración</label>
-            <div className="flex gap-2">
-              {getDurationOptions(
-                doctors.find((d) => d.id === doctorId)?.durationMin ?? 20
-              ).map((opt) => (
-                <button
-                  key={opt}
-                  type="button"
-                  onClick={() => {
-                    setDurationMin(opt)
-                    setTime(null)
-                  }}
-                  className={cn(
-                    'px-4 py-1.5 rounded-full text-sm font-semibold border transition-colors',
-                    durationMin === opt
-                      ? 'bg-accent text-white border-accent'
-                      : 'bg-surface border-border text-text-secondary hover:border-accent hover:text-accent'
-                  )}
-                >
-                  {opt} min
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Slots */}
-          <div>
-            <label className="block text-xs font-semibold text-text-secondary mb-1">Horario</label>
-            {!doctorId || !date ? (
-              <p className="text-sm text-text-muted italic">
-                Seleccioná doctor y fecha para ver los turnos disponibles.
-              </p>
-            ) : slotsLoading ? (
-              <p className="text-sm text-text-muted">Cargando horarios...</p>
-            ) : slots.length === 0 ? (
-              <p className="text-sm text-text-muted">Sin turnos disponibles para esta fecha.</p>
-            ) : (
-              <div className="flex flex-wrap gap-2">
-                {slots.map((s) => (
-                  <button
-                    key={s.time}
-                    type="button"
-                    disabled={!s.available}
-                    onClick={() => setTime(s.time)}
-                    className={cn(
-                      'px-3 py-1 rounded-lg text-sm font-medium border transition-colors',
-                      !s.available && 'opacity-40 cursor-not-allowed border-border text-text-muted',
-                      s.available &&
-                        time === s.time &&
-                        'bg-accent text-white border-accent',
-                      s.available &&
-                        time !== s.time &&
-                        'border-border text-text-secondary hover:border-accent hover:text-accent'
-                    )}
-                  >
-                    {formatTime(s.time)}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-
-          <hr className="border-border" />
-
-          {/* Datos del paciente */}
-          <div className="grid grid-cols-2 gap-3">
-            <div className="col-span-2">
-              <label className="block text-xs font-semibold text-text-secondary mb-1">
-                Nombre completo *
-              </label>
-              <input
-                className={inputClass}
-                value={patientName}
-                onChange={(e) => setPatientName(e.target.value)}
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-text-secondary mb-1">DNI *</label>
-              <input
-                className={inputClass}
-                value={patientDni}
-                onChange={(e) => setPatientDni(e.target.value)}
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-text-secondary mb-1">
-                Teléfono *
-              </label>
-              <input
-                className={inputClass}
-                value={patientPhone}
-                onChange={(e) => setPatientPhone(e.target.value)}
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-text-secondary mb-1">Email</label>
-              <input
-                type="email"
-                className={inputClass}
-                value={patientEmail}
-                onChange={(e) => setPatientEmail(e.target.value)}
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-text-secondary mb-1">
-                Obra social
-              </label>
-              <input
-                className={inputClass}
-                value={patientInsurance}
-                onChange={(e) => setPatientInsurance(e.target.value)}
-              />
-            </div>
-            <div className="col-span-2">
-              <label className="block text-xs font-semibold text-text-secondary mb-1">Notas</label>
-              <textarea
-                className={cn(inputClass, 'resize-none')}
-                rows={2}
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-              />
-            </div>
-          </div>
-
-          {error && (
-            <p className="text-sm text-error bg-red-50 border border-red-200 rounded-lg px-4 py-2">
-              {error}
-            </p>
-          )}
-
-          <div className="flex justify-end gap-3 pt-2">
+              Nuevo turno
+            </h2>
             <button
               type="button"
               onClick={onClose}
-              className="text-sm text-text-secondary hover:text-text-primary transition-colors"
+              aria-label="Cerrar modal"
+              className="text-text-secondary hover:text-text-primary transition-colors"
             >
-              Cancelar
-            </button>
-            <button
-              type="submit"
-              disabled={loading || !time}
-              className={cn(
-                'px-5 py-2 rounded-lg bg-accent text-white text-sm font-semibold transition-colors',
-                loading || !time
-                  ? 'opacity-50 cursor-not-allowed'
-                  : 'hover:bg-teal-600'
-              )}
-            >
-              {loading ? 'Guardando...' : 'Guardar turno'}
+              <X className="h-5 w-5" />
             </button>
           </div>
-        </form>
-      </div>
+
+          <form onSubmit={handleSubmit} className="px-6 py-5 space-y-4">
+            {/* Doctor */}
+            <div>
+              <label className="block text-xs font-semibold text-text-secondary mb-1">Doctor</label>
+              <select
+                className={inputClass}
+                value={doctorId}
+                onChange={(e) => {
+                  setDoctorId(e.target.value ? Number(e.target.value) : '')
+                  setTime(null)
+                }}
+                required
+              >
+                <option value="">Seleccioná un doctor</option>
+                {doctors.map((d) => (
+                  <option key={d.id} value={d.id}>
+                    {d.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Fecha */}
+            <div>
+              <label className="block text-xs font-semibold text-text-secondary mb-1">Fecha</label>
+              <input
+                type="date"
+                className={inputClass}
+                value={date}
+                onChange={(e) => {
+                  setDate(e.target.value)
+                  setTime(null)
+                }}
+                required
+              />
+            </div>
+
+            {/* Duración */}
+            <div>
+              <label className="block text-xs font-semibold text-text-secondary mb-1">Duración</label>
+              <div className="flex gap-2">
+                {getDurationOptions(
+                  doctors.find((d) => d.id === doctorId)?.durationMin ?? 20
+                ).map((opt) => (
+                  <button
+                    key={opt}
+                    type="button"
+                    onClick={() => {
+                      setDurationMin(opt)
+                      setTime(null)
+                    }}
+                    className={cn(
+                      'px-4 py-1.5 rounded-full text-sm font-semibold border transition-colors',
+                      durationMin === opt
+                        ? 'bg-accent text-white border-accent'
+                        : 'bg-surface border-border text-text-secondary hover:border-accent hover:text-accent'
+                    )}
+                  >
+                    {opt} min
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Slots */}
+            <div>
+              <label className="block text-xs font-semibold text-text-secondary mb-1">Horario</label>
+              {!doctorId || !date ? (
+                <p className="text-sm text-text-muted italic">
+                  Seleccioná doctor y fecha para ver los turnos disponibles.
+                </p>
+              ) : slotsLoading ? (
+                <p className="text-sm text-text-muted">Cargando horarios...</p>
+              ) : slots.length === 0 ? (
+                <p className="text-sm text-text-muted">Sin turnos disponibles para esta fecha.</p>
+              ) : (
+                <div className="flex flex-wrap gap-2">
+                  {slots.map((s) => (
+                    <button
+                      key={s.time}
+                      type="button"
+                      disabled={!s.available}
+                      onClick={() => setTime(s.time)}
+                      className={cn(
+                        'px-3 py-1 rounded-lg text-sm font-medium border transition-colors',
+                        !s.available && 'opacity-40 cursor-not-allowed border-border text-text-muted',
+                        s.available &&
+                          time === s.time &&
+                          'bg-accent text-white border-accent',
+                        s.available &&
+                          time !== s.time &&
+                          'border-border text-text-secondary hover:border-accent hover:text-accent'
+                      )}
+                    >
+                      {formatTime(s.time)}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <hr className="border-border" />
+
+            {/* Datos del paciente */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="col-span-2">
+                <label className="block text-xs font-semibold text-text-secondary mb-1">
+                  Nombre completo *
+                </label>
+                <input
+                  className={inputClass}
+                  value={patientName}
+                  onChange={(e) => setPatientName(e.target.value)}
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-text-secondary mb-1">DNI *</label>
+                <input
+                  className={inputClass}
+                  value={patientDni}
+                  onChange={(e) => setPatientDni(e.target.value)}
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-text-secondary mb-1">
+                  Teléfono *
+                </label>
+                <input
+                  className={inputClass}
+                  value={patientPhone}
+                  onChange={(e) => setPatientPhone(e.target.value)}
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-text-secondary mb-1">Email</label>
+                <input
+                  type="email"
+                  className={inputClass}
+                  value={patientEmail}
+                  onChange={(e) => setPatientEmail(e.target.value)}
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-text-secondary mb-1">
+                  Obra social
+                </label>
+                <input
+                  className={inputClass}
+                  value={patientInsurance}
+                  onChange={(e) => setPatientInsurance(e.target.value)}
+                />
+              </div>
+              <div className="col-span-2">
+                <label className="block text-xs font-semibold text-text-secondary mb-1">Notas</label>
+                <textarea
+                  className={cn(inputClass, 'resize-none')}
+                  rows={2}
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                />
+              </div>
+            </div>
+
+            {error && (
+              <p className="text-sm text-error bg-red-50 border border-red-200 rounded-lg px-4 py-2">
+                {error}
+              </p>
+            )}
+
+            <div className="flex justify-end gap-3 pt-2">
+              <button
+                type="button"
+                onClick={onClose}
+                className="text-sm text-text-secondary hover:text-text-primary transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                disabled={loading || !time}
+                className={cn(
+                  'px-5 py-2 rounded-lg bg-accent text-white text-sm font-semibold transition-colors',
+                  loading || !time
+                    ? 'opacity-50 cursor-not-allowed'
+                    : 'hover:bg-teal-600'
+                )}
+              >
+                {loading ? 'Guardando...' : 'Guardar turno'}
+              </button>
+            </div>
+          </form>
+        </div>
+      </FocusTrap>
     </div>
   )
 }
