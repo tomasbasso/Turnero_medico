@@ -1,8 +1,19 @@
 import { type NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
+import { bookingLimiter, getIp } from '@/lib/rate-limit'
 
 export async function POST(request: NextRequest) {
+  // Rate limiting — corre ANTES de leer el body (D-10, D-11, D-12)
+  const ip = getIp(request)
+  const { success } = await bookingLimiter.limit(ip)
+  if (!success) {
+    return Response.json(
+      { error: 'Demasiadas solicitudes. Esperá unos minutos e intentá de nuevo.' },
+      { status: 429 },
+    )
+  }
+
   const body = await request.json().catch(() => null)
   if (!body) return Response.json({ error: 'Cuerpo requerido' }, { status: 400 })
 

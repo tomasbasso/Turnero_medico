@@ -2,8 +2,19 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { comparePassword, signToken, cookieOptions } from '@/lib/auth'
 import type { JWTPayload } from '@/lib/auth'
+import { loginLimiter, getIp } from '@/lib/rate-limit'
 
 export async function POST(request: NextRequest) {
+  // Rate limiting — corre ANTES de leer el body (D-10, D-11, D-12)
+  const ip = getIp(request)
+  const { success } = await loginLimiter.limit(ip)
+  if (!success) {
+    return Response.json(
+      { error: 'Demasiados intentos. Esperá unos minutos e intentá de nuevo.' },
+      { status: 429 },
+    )
+  }
+
   const body = await request.json().catch(() => null)
 
   if (!body?.email || !body?.password) {
