@@ -43,3 +43,14 @@ next-env.d.ts
 /app/generated/prisma
 
 .superpowers/
+
+# Claude Code local config
+.claude/settings.local.json
+.claude/worktrees/
+
+# Windows crash dumps
+*.stackdump
+
+# Scratch utilities
+scratch/encode.js
+scratch/base64.txt
