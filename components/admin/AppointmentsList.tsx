@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { MessageCircle, MessageCircleCheck, Calendar, Plus } from 'lucide-react'
 import { NewAppointmentModal } from '@/components/admin/NewAppointmentModal'
-import { cn, formatDate, formatTime, formatDni, STATUS_LABELS, STATUS_COLORS } from '@/lib/utils'
+import { cn, formatDate, formatTime, formatDni, getInitials, STATUS_LABELS, STATUS_COLORS } from '@/lib/utils'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -37,21 +37,22 @@ interface AppointmentsListProps {
 const inputClass =
   'rounded-lg border border-border bg-surface px-3 py-2 text-sm text-text-primary focus:border-[rgba(20,184,166,0.4)] focus:outline-none focus:ring-1 focus:ring-[rgba(20,184,166,0.4)]'
 
-type Tab = 'pendientes' | 'pordia'
+type Tab = 'todos' | 'pendientes' | 'pordia'
 
 const TAB_FILTERS: Record<Tab, { date: string; doctorId: string; status: string; dni: string }> = {
+  todos:      { date: '', doctorId: '', status: '', dni: '' },
   pendientes: { date: '', doctorId: '', status: 'PENDING', dni: '' },
-  pordia: { date: new Date().toISOString().split('T')[0], doctorId: '', status: '', dni: '' },
+  pordia:     { date: new Date().toISOString().split('T')[0], doctorId: '', status: '', dni: '' },
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export function AppointmentsList({ initialData, doctors }: AppointmentsListProps) {
-  const [activeTab, setActiveTab] = useState<Tab>('pendientes')
+  const [activeTab, setActiveTab] = useState<Tab>('todos')
   const [appointments, setAppointments] = useState<Appointment[]>(initialData)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [filters, setFilters] = useState(TAB_FILTERS.pendientes)
+  const [filters, setFilters] = useState(TAB_FILTERS.todos)
   const [cancellingId, setCancellingId] = useState<number | null>(null)
   const [loadingId, setLoadingId] = useState<number | null>(null)
   const [mutationError, setMutationError] = useState<string | null>(null)
@@ -164,28 +165,26 @@ export function AppointmentsList({ initialData, doctors }: AppointmentsListProps
       {/* Tabs */}
       <div className="flex items-end justify-between mb-6 border-b border-border">
         <div className="flex gap-1">
-          <button
-            onClick={() => handleTabChange('pendientes')}
-            className={cn(
-              'px-4 py-2 text-sm font-semibold border-b-2 -mb-px transition-colors',
-              activeTab === 'pendientes'
-                ? 'border-accent text-accent'
-                : 'border-transparent text-text-secondary hover:text-text-primary'
-            )}
-          >
-            Pendientes
-          </button>
-          <button
-            onClick={() => handleTabChange('pordia')}
-            className={cn(
-              'px-4 py-2 text-sm font-semibold border-b-2 -mb-px transition-colors',
-              activeTab === 'pordia'
-                ? 'border-accent text-accent'
-                : 'border-transparent text-text-secondary hover:text-text-primary'
-            )}
-          >
-            Por día
-          </button>
+          {(
+            [
+              { id: 'todos',      label: 'Todos' },
+              { id: 'pendientes', label: 'Pendientes' },
+              { id: 'pordia',     label: 'Por día' },
+            ] as { id: Tab; label: string }[]
+          ).map(({ id, label }) => (
+            <button
+              key={id}
+              onClick={() => handleTabChange(id)}
+              className={cn(
+                'px-4 py-2 text-sm font-semibold border-b-2 -mb-px transition-colors',
+                activeTab === id
+                  ? 'border-accent text-accent'
+                  : 'border-transparent text-text-secondary hover:text-text-primary'
+              )}
+            >
+              {label}
+            </button>
+          ))}
         </div>
         <button
           onClick={() => setShowNewModal(true)}
@@ -198,7 +197,7 @@ export function AppointmentsList({ initialData, doctors }: AppointmentsListProps
 
       {/* Filter bar */}
       <div className="flex flex-wrap items-center gap-3 mb-6">
-        {activeTab === 'pordia' && (
+        {(activeTab === 'pordia' || activeTab === 'todos') && (
           <input
             type="date"
             className={inputClass}
@@ -218,7 +217,7 @@ export function AppointmentsList({ initialData, doctors }: AppointmentsListProps
             </option>
           ))}
         </select>
-        {activeTab === 'pordia' && (
+        {(activeTab === 'pordia' || activeTab === 'todos') && (
           <select
             className={cn(inputClass, 'w-40')}
             value={filters.status}
@@ -277,7 +276,8 @@ export function AppointmentsList({ initialData, doctors }: AppointmentsListProps
             <table className="w-full table-auto">
               <thead className="border-b border-border">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-text-muted uppercase tracking-wide">
+                  <th className="px-4 py-3 w-12" />
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-text-muted uppercase tracking-wide">
                     Paciente
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-semibold text-text-muted uppercase tracking-wide">
@@ -300,8 +300,15 @@ export function AppointmentsList({ initialData, doctors }: AppointmentsListProps
                     key={appointment.id}
                     className="border-b border-border last:border-b-0 hover:bg-background transition-colors"
                   >
+                    {/* Avatar */}
+                    <td className="px-4 py-4 align-middle w-12">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-light text-primary text-xs font-bold flex-shrink-0">
+                        {getInitials(appointment.patientName)}
+                      </div>
+                    </td>
+
                     {/* Paciente + DNI */}
-                    <td className="px-6 py-4 align-top">
+                    <td className="px-4 py-4 align-top">
                       <p className="text-sm font-semibold text-text-primary">
                         {appointment.patientName}
                       </p>

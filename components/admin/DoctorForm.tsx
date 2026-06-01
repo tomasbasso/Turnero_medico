@@ -40,16 +40,19 @@ export function DoctorForm({ doctor, specialties, onClose }: DoctorFormProps) {
 
   async function compressImage(source: File): Promise<File> {
     const img = new Image()
-    img.src = URL.createObjectURL(source)
-    await new Promise<void>((resolve) => { img.onload = () => resolve() })
+    await new Promise<void>((resolve, reject) => {
+      img.onload = () => resolve()
+      img.onerror = () => reject(new Error('No se pudo cargar la imagen'))
+      img.src = URL.createObjectURL(source)
+    })
     const max = 300
     const scale = Math.min(1, max / Math.max(img.width, img.height))
     const canvas = document.createElement('canvas')
     canvas.width = Math.round(img.width * scale)
     canvas.height = Math.round(img.height * scale)
     canvas.getContext('2d')!.drawImage(img, 0, 0, canvas.width, canvas.height)
-    const blob = await new Promise<Blob>((resolve) =>
-      canvas.toBlob((b) => resolve(b!), 'image/jpeg', 0.8),
+    const blob = await new Promise<Blob>((resolve, reject) =>
+      canvas.toBlob((b) => b ? resolve(b) : reject(new Error('Error al comprimir')), 'image/jpeg', 0.8),
     )
     return new File([blob], 'avatar.jpg', { type: 'image/jpeg' })
   }
@@ -62,9 +65,13 @@ export function DoctorForm({ doctor, specialties, onClose }: DoctorFormProps) {
       return
     }
     setAvatarError('')
-    const compressed = await compressImage(selected)
-    setPreview(URL.createObjectURL(compressed))
-    setFile(compressed)
+    try {
+      const compressed = await compressImage(selected)
+      setPreview(URL.createObjectURL(compressed))
+      setFile(compressed)
+    } catch {
+      setAvatarError('La imagen no pudo subirse. Intentá con otro archivo.')
+    }
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -88,8 +95,12 @@ export function DoctorForm({ doctor, specialties, onClose }: DoctorFormProps) {
           durationMin: Number(durationMin),
         }
         if (file) {
-          const avatarUrl = await uploadAvatar(file, doctor.id)
-          updateData.avatar = avatarUrl
+          try {
+            const avatarUrl = await uploadAvatar(file, doctor.id)
+            updateData.avatar = avatarUrl
+          } catch {
+            setAvatarError('La imagen no pudo subirse. Intentá con otro archivo.')
+          }
         }
         const res = await fetch('/api/admin/doctors/' + doctor.id, {
           method: 'PUT',

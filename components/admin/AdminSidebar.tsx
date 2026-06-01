@@ -9,21 +9,22 @@ import {
   BookOpen,
   Users,
   LogOut,
+  HeartPulse,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { ThemeToggle } from '@/components/ThemeToggle'
 
 const NAV_ITEMS = [
-  { href: '/admin',            label: 'Dashboard',      icon: LayoutDashboard },
-  { href: '/admin/turnos',     label: 'Turnos',         icon: Calendar },
-  { href: '/admin/medicos',    label: 'Médicos',        icon: Stethoscope },
-  { href: '/admin/especialidades', label: 'Especialidades', icon: BookOpen },
-  { href: '/admin/pacientes',  label: 'Pacientes',      icon: Users },
+  { href: '/admin',                 label: 'Dashboard',      icon: LayoutDashboard },
+  { href: '/admin/turnos',          label: 'Turnos',         icon: Calendar },
+  { href: '/admin/medicos',         label: 'Médicos',        icon: Stethoscope },
+  { href: '/admin/especialidades',  label: 'Especialidades', icon: BookOpen },
+  { href: '/admin/pacientes',       label: 'Pacientes',      icon: Users },
 ]
 
 export function AdminSidebar() {
   const pathname = usePathname()
-  const router = useRouter()
+  const router   = useRouter()
 
   async function handleLogout() {
     await fetch('/api/auth/logout', { method: 'POST' })
@@ -33,17 +34,21 @@ export function AdminSidebar() {
 
   return (
     <aside className="flex h-full w-56 flex-col border-r border-border bg-surface text-text-primary">
-      {/* Logo */}
+
+      {/* ── Logo ─────────────────────────────────────────────────────────── */}
       <div className="flex items-center gap-3 px-5 py-5 border-b border-border">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-accent">
-          <svg className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-3-3v6M12 3v2m0 14v2M3 12h2m14 0h2" />
-          </svg>
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-accent shadow-sm flex-shrink-0">
+          <HeartPulse className="h-4 w-4 text-white" />
         </div>
-        <span className="font-display text-sm font-semibold text-text-primary">Turnero Médico</span>
+        <div className="min-w-0">
+          <span className="font-display text-sm font-semibold text-text-primary block truncate">
+            Turnero Médico
+          </span>
+          <span className="text-[10px] text-text-muted block">Panel de gestión</span>
+        </div>
       </div>
 
-      {/* Navigation */}
+      {/* ── Navigation ───────────────────────────────────────────────────── */}
       <nav className="flex-1 space-y-0.5 px-3 py-4">
         {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
           const active = pathname === href || (href !== '/admin' && pathname.startsWith(href))
@@ -52,7 +57,7 @@ export function AdminSidebar() {
               key={href}
               href={href}
               className={cn(
-                'flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium transition-colors',
+                'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
                 active
                   ? 'bg-primary-light text-primary'
                   : 'text-text-secondary hover:bg-primary-light hover:text-primary',
@@ -65,22 +70,33 @@ export function AdminSidebar() {
         })}
       </nav>
 
-      {/* Footer */}
-      <div className="border-t border-border p-3">
-        <div className="mb-2 px-3 py-2">
-          <p className="text-xs text-text-muted">Estado del Sistema</p>
-          <div className="mt-1 flex items-center gap-1.5">
+      {/* ── Footer ───────────────────────────────────────────────────────── */}
+      <div className="border-t border-border p-3 space-y-1">
+
+        {/* Status + theme */}
+        <div className="flex items-center justify-between px-3 py-2">
+          <div className="flex items-center gap-1.5">
             <span className="h-1.5 w-1.5 rounded-full bg-success" />
-            <span className="text-xs text-text-secondary">Operativo</span>
+            <span className="text-xs text-text-muted">Operativo</span>
           </div>
-        </div>
-        <div className="flex items-center justify-between px-1 pb-1">
-          <span className="px-2 text-xs text-text-muted">Tema</span>
           <ThemeToggle />
         </div>
+
+        {/* User profile */}
+        <div className="flex items-center gap-3 px-3 py-2 rounded-lg bg-background/50">
+          <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-primary-light text-primary text-xs font-bold">
+            AD
+          </div>
+          <div className="min-w-0">
+            <p className="text-xs font-semibold text-text-primary truncate">Administrador</p>
+            <p className="text-[10px] text-text-muted truncate">admin@clinica.com</p>
+          </div>
+        </div>
+
+        {/* Logout */}
         <button
           onClick={handleLogout}
-          className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium text-text-secondary transition-colors hover:bg-error/10 hover:text-error"
+          className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-text-secondary transition-colors hover:bg-error/10 hover:text-error"
         >
           <LogOut className="h-4 w-4" />
           Cerrar sesión

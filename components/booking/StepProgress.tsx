@@ -1,39 +1,75 @@
 'use client'
 import { cn } from '@/lib/utils'
+import { Stethoscope, UserRound, CalendarDays, ClipboardList, CheckCircle2 } from 'lucide-react'
 
-const LABELS = ['Especialidad', 'Médico', 'Fecha y hora', 'Tus datos', 'Confirmación']
+const STEPS = [
+  { label: 'Especialidad', icon: Stethoscope },
+  { label: 'Médico',       icon: UserRound },
+  { label: 'Fecha y hora', icon: CalendarDays },
+  { label: 'Tus datos',    icon: ClipboardList },
+  { label: 'Confirmación', icon: CheckCircle2 },
+]
 
 export function StepProgress({ currentStep }: { currentStep: 1 | 2 | 3 | 4 | 5 }) {
   return (
     <div
-      className="flex flex-col items-center gap-2 mb-6"
-      aria-label={`Paso ${currentStep} de 5: ${LABELS[currentStep - 1]}`}
+      className="flex flex-col gap-3 mb-7"
+      aria-label={`Paso ${currentStep} de 5: ${STEPS[currentStep - 1].label}`}
     >
-      <div className="flex items-center w-full max-w-sm mx-auto">
-        {LABELS.map((_, i) => (
-          <div key={i} className="flex items-center flex-1 last:flex-none">
-            {i > 0 && (
+      {/* Step circles + connectors */}
+      <div className="flex items-center w-full">
+        {STEPS.map(({ icon: Icon }, i) => {
+          const done    = i + 1 < currentStep
+          const current = i + 1 === currentStep
+
+          return (
+            <div key={i} className="flex items-center flex-1 last:flex-none">
+              {/* Connector */}
+              {i > 0 && (
+                <div
+                  className={cn(
+                    'flex-1 h-0.5 transition-all duration-300',
+                    i < currentStep ? 'bg-primary' : 'bg-border'
+                  )}
+                />
+              )}
+
+              {/* Circle */}
               <div
                 className={cn(
-                  'flex-1 h-0.5 transition-all',
-                  i < currentStep ? 'bg-primary' : 'bg-border'
+                  'flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full transition-all duration-300',
+                  done    && 'bg-primary text-white dark:text-[#04211e]',
+                  current && 'bg-primary text-white dark:text-[#04211e] ring-4 ring-primary/20',
+                  !done && !current && 'bg-surface text-text-muted ring-1 ring-border',
                 )}
-              />
-            )}
+              >
+                <Icon className="h-4 w-4" />
+              </div>
+            </div>
+          )
+        })}
+      </div>
+
+      {/* Step labels */}
+      <div className="flex items-start w-full">
+        {STEPS.map(({ label }, i) => {
+          const done    = i + 1 < currentStep
+          const current = i + 1 === currentStep
+          return (
             <div
+              key={i}
               className={cn(
-                'flex h-6 w-6 items-center justify-center rounded-full text-xs font-semibold transition-all',
-                i + 1 <= currentStep
-                  ? 'bg-primary text-white dark:text-[#04211e]'
-                  : 'bg-surface text-text-muted ring-1 ring-border'
+                'flex-1 text-center text-[10px] font-medium leading-tight transition-colors',
+                current  ? 'text-primary' : done ? 'text-text-secondary' : 'text-text-muted',
+                i === 0 && 'text-left',
+                i === STEPS.length - 1 && 'text-right flex-none',
               )}
             >
-              {i + 1}
+              {label}
             </div>
-          </div>
-        ))}
+          )
+        })}
       </div>
-      <p className="text-sm text-text-secondary text-center">{LABELS[currentStep - 1]}</p>
     </div>
   )
 }
