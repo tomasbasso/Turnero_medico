@@ -55,7 +55,7 @@ function LoginContent() {
       <div className="relative w-full max-w-md">
         {/* Card */}
         <div
-          className="rounded-xl bg-white/80 p-8 shadow-modal backdrop-blur-xl"
+          className="rounded-xl bg-surface/80 p-8 shadow-modal backdrop-blur-xl"
           style={{ boxShadow: 'var(--shadow-md)' }}
         >
           {/* Logo */}
@@ -103,7 +103,7 @@ function LoginContent() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="admin@clinica.com"
-                className="w-full rounded-lg border border-border bg-white px-4 py-3 text-sm text-text-primary placeholder:text-text-muted transition-all outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                className="input-focus w-full rounded-lg border border-border bg-surface px-4 py-3 text-sm text-text-primary placeholder:text-text-muted transition-all outline-none"
               />
             </div>
 
@@ -123,13 +123,13 @@ function LoginContent() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full rounded-lg border border-border bg-white px-4 py-3 text-sm text-text-primary placeholder:text-text-muted transition-all outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                className="input-focus w-full rounded-lg border border-border bg-surface px-4 py-3 text-sm text-text-primary placeholder:text-text-muted transition-all outline-none"
               />
             </div>
 
             {/* Error */}
             {error && (
-              <p className="rounded-lg bg-red-50 px-4 py-2.5 text-sm text-error">
+              <p className="rounded-lg bg-error/10 px-4 py-2.5 text-sm text-error">
                 {error}
               </p>
             )}
@@ -138,7 +138,7 @@ function LoginContent() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded-lg bg-gradient-to-r from-primary to-accent py-3 text-sm font-semibold text-white transition-all hover:shadow-[0_0_12px_rgba(20,184,166,0.4)] hover:opacity-90 disabled:opacity-60 disabled:cursor-not-allowed"
+              className="btn-primary w-full rounded-lg py-3 text-sm font-semibold transition-all"
             >
               {loading ? (
                 <span className="flex items-center justify-center gap-2">
