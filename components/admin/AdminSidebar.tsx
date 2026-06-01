@@ -11,6 +11,7 @@ import {
   LogOut,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { ThemeToggle } from '@/components/ThemeToggle'
 
 const NAV_ITEMS = [
   { href: '/admin',            label: 'Dashboard',      icon: LayoutDashboard },
@@ -72,6 +73,10 @@ export function AdminSidebar() {
             <span className="h-1.5 w-1.5 rounded-full bg-success" />
             <span className="text-xs text-slate-400">Operativo</span>
           </div>
+        </div>
+        <div className="flex items-center justify-between px-1 pb-1">
+          <span className="px-2 text-xs text-slate-500">Tema</span>
+          <ThemeToggle />
         </div>
         <button
           onClick={handleLogout}
