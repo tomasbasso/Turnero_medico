@@ -41,23 +41,31 @@ export async function PATCH(
     })
 
     if (body.status === 'CONFIRMED' && appointment.patientEmail && !appointment.emailConfirmationSent) {
-      const result = await sendConfirmationEmail({
-        to: appointment.patientEmail,
-        patientName: appointment.patientName,
-        doctorName: appointment.doctor.name,
-        specialty: appointment.doctor.specialty.name,
-        date: appointment.date,
-        time: appointment.time,
-        durationMin: appointment.durationMin,
+      // Atomically claim the send slot — only one concurrent request wins (gets count === 1)
+      const claimed = await prisma.appointment.updateMany({
+        where: { id: numericId, emailConfirmationSent: false },
+        data: { emailConfirmationSent: true },
       })
 
-      if (result.success) {
-        await prisma.appointment.update({
-          where: { id: numericId },
-          data: { emailConfirmationSent: true },
+      if (claimed.count === 1) {
+        const result = await sendConfirmationEmail({
+          to: appointment.patientEmail,
+          patientName: appointment.patientName,
+          doctorName: appointment.doctor.name,
+          specialty: appointment.doctor.specialty.name,
+          date: appointment.date,
+          time: appointment.time,
+          durationMin: appointment.durationMin,
         })
-      } else {
-        console.error(`[PATCH appointments/${numericId}] Email falló:`, result.error)
+
+        if (!result.success) {
+          console.error(`[PATCH appointments/${numericId}] Email falló:`, result.error)
+          // Revert flag so the admin can retry by re-confirming
+          await prisma.appointment.update({
+            where: { id: numericId },
+            data: { emailConfirmationSent: false },
+          })
+        }
       }
     }
 

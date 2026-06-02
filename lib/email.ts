@@ -14,7 +14,12 @@ function getResend(): Resend {
 const FROM_ADDRESS = process.env.RESEND_FROM_ADDRESS ?? 'Consultorio <turnos@tudominio.com>'
 
 function escHtml(s: string): string {
-  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+  return s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
 }
 
 type EmailParams = {
@@ -51,7 +56,7 @@ export function buildConfirmationHtml(p: EmailParams): string {
         <tr><td style="padding:8px 0;color:#555;width:110px">Médico</td><td><strong>${escHtml(p.doctorName)}</strong></td></tr>
         <tr><td style="padding:8px 0;color:#555">Especialidad</td><td>${escHtml(p.specialty)}</td></tr>
         <tr><td style="padding:8px 0;color:#555">Fecha</td><td>${formatDateES(p.date)}</td></tr>
-        <tr><td style="padding:8px 0;color:#555">Hora</td><td>${p.time}</td></tr>
+        <tr><td style="padding:8px 0;color:#555">Hora</td><td>${escHtml(p.time)}</td></tr>
         <tr><td style="padding:8px 0;color:#555">Duración</td><td>${p.durationMin} minutos</td></tr>
       </table>
       <p style="margin-top:24px;color:#555;font-size:14px">
@@ -71,7 +76,7 @@ export function buildReminderHtml(p: EmailParams): string {
         <tr><td style="padding:8px 0;color:#555;width:110px">Médico</td><td><strong>${escHtml(p.doctorName)}</strong></td></tr>
         <tr><td style="padding:8px 0;color:#555">Especialidad</td><td>${escHtml(p.specialty)}</td></tr>
         <tr><td style="padding:8px 0;color:#555">Fecha</td><td>${formatDateES(p.date)}</td></tr>
-        <tr><td style="padding:8px 0;color:#555">Hora</td><td>${p.time}</td></tr>
+        <tr><td style="padding:8px 0;color:#555">Hora</td><td>${escHtml(p.time)}</td></tr>
         <tr><td style="padding:8px 0;color:#555">Duración</td><td>${p.durationMin} minutos</td></tr>
       </table>
       <p style="margin-top:24px;color:#555;font-size:14px">

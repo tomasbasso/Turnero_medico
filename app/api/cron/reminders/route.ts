@@ -15,6 +15,11 @@ export async function GET(request: NextRequest) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
+  if (!process.env.RESEND_API_KEY) {
+    console.error('[cron/reminders] RESEND_API_KEY no está configurada')
+    return Response.json({ error: 'Server misconfigured' }, { status: 500 })
+  }
+
   // El cron corre a las 12:00 UTC = 09:00 ARG (mismo día de calendario).
   // "Mañana ARG" = fecha UTC + 1 día.
   const now = new Date()
@@ -81,5 +86,6 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  return Response.json({ sent, errors, skipped })
+  const statusCode = sent === 0 && errors > 0 ? 500 : 200
+  return Response.json({ sent, errors, skipped }, { status: statusCode })
 }
