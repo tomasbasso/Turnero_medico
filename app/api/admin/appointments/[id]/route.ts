@@ -13,6 +13,7 @@ export async function PATCH(
   const authResult = requireStaff(request)
   if (authResult instanceof Response) return authResult
 
+  // Next.js 16: params is a Promise — must be awaited before destructuring
   const { id } = await params
   const numericId = parseInt(id, 10)
   if (isNaN(numericId)) {
@@ -39,7 +40,7 @@ export async function PATCH(
       },
     })
 
-    if (body.status === 'CONFIRMED' && appointment.patientEmail) {
+    if (body.status === 'CONFIRMED' && appointment.patientEmail && !appointment.emailConfirmationSent) {
       const result = await sendConfirmationEmail({
         to: appointment.patientEmail,
         patientName: appointment.patientName,
