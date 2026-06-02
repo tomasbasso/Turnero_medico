@@ -53,7 +53,7 @@ export default async function AdminDashboardPage() {
           <p className="text-sm text-text-secondary mt-1">{subtitle}</p>
         </div>
         <Link
-          href="/reservar"
+          href="/admin/turnos"
           className="btn-primary flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold"
         >
           <CalendarPlus className="h-4 w-4" />
