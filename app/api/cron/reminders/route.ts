@@ -5,6 +5,11 @@ import { sendReminderEmail } from '@/lib/email'
 export const dynamic = 'force-dynamic'
 
 export async function GET(request: NextRequest) {
+  if (!process.env.CRON_SECRET) {
+    console.error('[cron/reminders] CRON_SECRET no está configurada')
+    return Response.json({ error: 'Server misconfigured' }, { status: 500 })
+  }
+
   const authHeader = request.headers.get('authorization')
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 })
@@ -41,31 +46,40 @@ export async function GET(request: NextRequest) {
 
   let sent = 0
   let errors = 0
+  let skipped = 0
 
   for (const appt of appointments) {
-    if (!appt.patientEmail) continue
+    try {
+      if (!appt.patientEmail) {
+        skipped++
+        continue
+      }
 
-    const result = await sendReminderEmail({
-      to: appt.patientEmail,
-      patientName: appt.patientName,
-      doctorName: appt.doctor.name,
-      specialty: appt.doctor.specialty.name,
-      date: appt.date,
-      time: appt.time,
-      durationMin: appt.durationMin,
-    })
-
-    if (result.success) {
-      await prisma.appointment.update({
-        where: { id: appt.id },
-        data: { emailReminderSent: true },
+      const result = await sendReminderEmail({
+        to: appt.patientEmail,
+        patientName: appt.patientName,
+        doctorName: appt.doctor.name,
+        specialty: appt.doctor.specialty.name,
+        date: appt.date,
+        time: appt.time,
+        durationMin: appt.durationMin,
       })
-      sent++
-    } else {
-      console.error(`[cron/reminders] Fallo en turno ${appt.id}:`, result.error)
+
+      if (result.success) {
+        await prisma.appointment.update({
+          where: { id: appt.id },
+          data: { emailReminderSent: true },
+        })
+        sent++
+      } else {
+        console.error(`[cron/reminders] Fallo en turno ${appt.id}:`, result.error)
+        errors++
+      }
+    } catch (err) {
+      console.error(`[cron/reminders] Error inesperado en turno ${appt.id}:`, err)
       errors++
     }
   }
 
-  return Response.json({ sent, errors })
+  return Response.json({ sent, errors, skipped })
 }
