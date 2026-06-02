@@ -45,9 +45,9 @@ export default async function AdminDashboardPage() {
   const subtitle = `Semana del ${formatDate(monday)} al ${formatDate(sunday)}`
 
   return (
-    <div className="p-6">
+    <div className="p-4 md:p-6">
       {/* Header */}
-      <div className="mb-8 flex items-start justify-between">
+      <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="font-display text-xl font-semibold text-text-primary">Dashboard</h1>
           <p className="text-sm text-text-secondary mt-1">{subtitle}</p>
@@ -62,7 +62,7 @@ export default async function AdminDashboardPage() {
       </div>
 
       {/* Stat cards */}
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 md:gap-4 md:grid-cols-4">
         <StatCard status="PENDING"   count={stats.PENDING}   trend={trend('PENDING')} />
         <StatCard status="CONFIRMED" count={stats.CONFIRMED} trend={trend('CONFIRMED')} />
         <StatCard status="COMPLETED" count={stats.COMPLETED} trend={trend('COMPLETED')} />

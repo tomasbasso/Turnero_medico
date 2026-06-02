@@ -10,6 +10,7 @@ import {
   Users,
   LogOut,
   HeartPulse,
+  X,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { ThemeToggle } from '@/components/ThemeToggle'
@@ -22,7 +23,7 @@ const NAV_ITEMS = [
   { href: '/admin/pacientes',       label: 'Pacientes',      icon: Users },
 ]
 
-export function AdminSidebar() {
+export function AdminSidebar({ onClose }: { onClose?: () => void } = {}) {
   const pathname = usePathname()
   const router   = useRouter()
 
@@ -40,12 +41,21 @@ export function AdminSidebar() {
         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-accent shadow-sm flex-shrink-0">
           <HeartPulse className="h-4 w-4 text-white" />
         </div>
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
           <span className="font-display text-sm font-semibold text-text-primary block truncate">
             Turnero Médico
           </span>
           <span className="text-[10px] text-text-muted block">Panel de gestión</span>
         </div>
+        {onClose && (
+          <button
+            onClick={onClose}
+            className="md:hidden rounded-lg p-1 text-text-secondary hover:bg-primary-light hover:text-primary transition-colors"
+            aria-label="Cerrar menú"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        )}
       </div>
 
       {/* ── Navigation ───────────────────────────────────────────────────── */}
