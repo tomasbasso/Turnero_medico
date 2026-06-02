@@ -1,6 +1,8 @@
 import { prisma } from '@/lib/prisma'
 import { AppointmentsList } from '@/components/admin/AppointmentsList'
 
+export const dynamic = 'force-dynamic'
+
 export default async function TurnosPage() {
   const today = new Date()
   today.setHours(0, 0, 0, 0)
