@@ -73,6 +73,8 @@ model Appointment {
   status       AppointmentStatus @default(PENDING)
   notes        String?
   whatsappSent Boolean           @default(false)
+  emailConfirmationSent Boolean           @default(false)
+  emailReminderSent     Boolean           @default(false)
   createdAt    DateTime          @default(now()) @db.Timestamp(6)
   updatedAt    DateTime          @updatedAt @db.Timestamp(6)
 
