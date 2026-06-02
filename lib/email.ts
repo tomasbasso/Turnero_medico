@@ -11,7 +11,11 @@ function getResend(): Resend {
 }
 
 // Cambiar por el dominio verificado en Resend. Para desarrollo usar: onboarding@resend.dev
-const FROM_ADDRESS = 'Consultorio <turnos@tudominio.com>'
+const FROM_ADDRESS = process.env.RESEND_FROM_ADDRESS ?? 'Consultorio <turnos@tudominio.com>'
+
+function escHtml(s: string): string {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+}
 
 type EmailParams = {
   patientName: string
@@ -41,11 +45,11 @@ export function buildConfirmationHtml(p: EmailParams): string {
   return `
     <div style="font-family:sans-serif;max-width:560px;margin:0 auto;color:#111">
       <h2 style="color:#0d9488">Tu turno está confirmado</h2>
-      <p>Hola <strong>${p.patientName}</strong>,</p>
+      <p>Hola <strong>${escHtml(p.patientName)}</strong>,</p>
       <p>Tu turno fue confirmado con los siguientes datos:</p>
       <table style="border-collapse:collapse;width:100%">
-        <tr><td style="padding:8px 0;color:#555;width:110px">Médico</td><td><strong>${p.doctorName}</strong></td></tr>
-        <tr><td style="padding:8px 0;color:#555">Especialidad</td><td>${p.specialty}</td></tr>
+        <tr><td style="padding:8px 0;color:#555;width:110px">Médico</td><td><strong>${escHtml(p.doctorName)}</strong></td></tr>
+        <tr><td style="padding:8px 0;color:#555">Especialidad</td><td>${escHtml(p.specialty)}</td></tr>
         <tr><td style="padding:8px 0;color:#555">Fecha</td><td>${formatDateES(p.date)}</td></tr>
         <tr><td style="padding:8px 0;color:#555">Hora</td><td>${p.time}</td></tr>
         <tr><td style="padding:8px 0;color:#555">Duración</td><td>${p.durationMin} minutos</td></tr>
@@ -61,11 +65,11 @@ export function buildReminderHtml(p: EmailParams): string {
   return `
     <div style="font-family:sans-serif;max-width:560px;margin:0 auto;color:#111">
       <h2 style="color:#0d9488">Recordatorio: tu turno es mañana</h2>
-      <p>Hola <strong>${p.patientName}</strong>,</p>
+      <p>Hola <strong>${escHtml(p.patientName)}</strong>,</p>
       <p>Te recordamos que mañana tenés turno:</p>
       <table style="border-collapse:collapse;width:100%">
-        <tr><td style="padding:8px 0;color:#555;width:110px">Médico</td><td><strong>${p.doctorName}</strong></td></tr>
-        <tr><td style="padding:8px 0;color:#555">Especialidad</td><td>${p.specialty}</td></tr>
+        <tr><td style="padding:8px 0;color:#555;width:110px">Médico</td><td><strong>${escHtml(p.doctorName)}</strong></td></tr>
+        <tr><td style="padding:8px 0;color:#555">Especialidad</td><td>${escHtml(p.specialty)}</td></tr>
         <tr><td style="padding:8px 0;color:#555">Fecha</td><td>${formatDateES(p.date)}</td></tr>
         <tr><td style="padding:8px 0;color:#555">Hora</td><td>${p.time}</td></tr>
         <tr><td style="padding:8px 0;color:#555">Duración</td><td>${p.durationMin} minutos</td></tr>
@@ -89,12 +93,13 @@ export async function sendConfirmationEmail(params: {
   durationMin: number
 }): Promise<SendResult> {
   try {
-    await getResend().emails.send({
+    const { error } = await getResend().emails.send({
       from: FROM_ADDRESS,
       to: params.to,
       subject: `Tu turno está confirmado — ${params.doctorName} el ${formatDateES(params.date)} a las ${params.time}`,
       html: buildConfirmationHtml(params),
     })
+    if (error) return { success: false, error: JSON.stringify(error) }
     return { success: true }
   } catch (err) {
     return { success: false, error: String(err) }
@@ -111,12 +116,13 @@ export async function sendReminderEmail(params: {
   durationMin: number
 }): Promise<SendResult> {
   try {
-    await getResend().emails.send({
+    const { error } = await getResend().emails.send({
       from: FROM_ADDRESS,
       to: params.to,
       subject: `Recordatorio: tu turno es mañana — ${params.doctorName} a las ${params.time}`,
       html: buildReminderHtml(params),
     })
+    if (error) return { success: false, error: JSON.stringify(error) }
     return { success: true }
   } catch (err) {
     return { success: false, error: String(err) }
