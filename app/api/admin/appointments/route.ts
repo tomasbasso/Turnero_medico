@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server'
 import { requireStaff } from '@/lib/auth-helpers'
 import { prisma } from '@/lib/prisma'
+import { sendConfirmationEmail } from '@/lib/email'
 
 const VALID_STATUSES = ['PENDING', 'CONFIRMED', 'CANCELLED', 'COMPLETED', 'NO_SHOW'] as const
 type ValidStatus = (typeof VALID_STATUSES)[number]
@@ -101,9 +102,9 @@ export async function POST(request: NextRequest) {
   if (!/^\d{7,8}$/.test(dniClean)) {
     return Response.json({ error: 'El DNI debe tener 7 u 8 dígitos numéricos.' }, { status: 400 })
   }
-  const phoneClean = String(patientPhone ?? '').replace(/\D/g, '')
-  if (phoneClean.length !== 10) {
-    return Response.json({ error: 'El teléfono debe tener exactamente 10 dígitos.' }, { status: 400 })
+  const phoneClean = String(patientPhone ?? '').trim()
+  if (!phoneClean) {
+    return Response.json({ error: 'El teléfono es requerido.' }, { status: 400 })
   }
 
   const [year, month, day] = date.split('-').map(Number)
@@ -111,12 +112,12 @@ export async function POST(request: NextRequest) {
 
   const doctor = await prisma.doctor.findUnique({
     where: { id: Number(doctorId), isActive: true },
+    include: { specialty: { select: { name: true } } },
   })
   if (!doctor) {
     return Response.json({ error: 'Doctor no encontrado' }, { status: 404 })
   }
 
-  // Validate that durationMin is a positive multiple of the doctor's base slot
   if (reqDurRaw % doctor.durationMin !== 0) {
     return Response.json(
       { error: `La duración debe ser múltiplo de ${doctor.durationMin} min.` },
@@ -125,7 +126,6 @@ export async function POST(request: NextRequest) {
   }
   const reqDur = reqDurRaw
 
-  // Overlap check
   const existing = await prisma.appointment.findMany({
     where: {
       doctorId: Number(doctorId),
@@ -163,6 +163,31 @@ export async function POST(request: NextRequest) {
       status: 'CONFIRMED',
     },
   })
+
+  if (appointment.patientEmail) {
+    const claimed = await prisma.appointment.updateMany({
+      where: { id: appointment.id, emailConfirmationSent: false },
+      data: { emailConfirmationSent: true },
+    })
+    if (claimed.count === 1) {
+      const result = await sendConfirmationEmail({
+        to: appointment.patientEmail,
+        patientName: appointment.patientName,
+        doctorName: doctor.name,
+        specialty: doctor.specialty.name,
+        date: appointment.date,
+        time: appointment.time,
+        durationMin: appointment.durationMin,
+      })
+      if (!result.success) {
+        console.error('[POST /api/admin/appointments] Email falló:', result.error)
+        await prisma.appointment.update({
+          where: { id: appointment.id },
+          data: { emailConfirmationSent: false },
+        })
+      }
+    }
+  }
 
   return Response.json({ appointment }, { status: 201 })
 }

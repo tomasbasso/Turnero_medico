@@ -2,6 +2,7 @@ import { type NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 import { bookingLimiter, getIp } from '@/lib/rate-limit'
+import { sendConfirmationEmail } from '@/lib/email'
 
 export async function POST(request: NextRequest) {
   // Rate limiting — corre ANTES de leer el body (D-10, D-11, D-12)
@@ -37,9 +38,9 @@ export async function POST(request: NextRequest) {
     return Response.json({ error: 'El DNI debe tener 7 u 8 dígitos numéricos.' }, { status: 400 })
   }
 
-  const phoneClean = String(patientPhone ?? '').replace(/\D/g, '')
-  if (phoneClean.length !== 10) {
-    return Response.json({ error: 'El teléfono debe tener exactamente 10 dígitos.' }, { status: 400 })
+  const phoneClean = String(patientPhone ?? '').trim()
+  if (!phoneClean) {
+    return Response.json({ error: 'El teléfono es requerido.' }, { status: 400 })
   }
 
   if (patientEmail && typeof patientEmail === 'string' && patientEmail.trim() !== '') {
@@ -54,7 +55,11 @@ export async function POST(request: NextRequest) {
   try {
     const doctor = await prisma.doctor.findUnique({
       where: { id: Number(doctorId), isActive: true },
-      select: { durationMin: true },
+      select: {
+        durationMin: true,
+        name: true,
+        specialty: { select: { name: true } },
+      },
     })
     if (!doctor) {
       return Response.json({ error: 'Doctor no encontrado' }, { status: 400 })
@@ -74,6 +79,32 @@ export async function POST(request: NextRequest) {
         status: 'PENDING',
       },
     })
+
+    if (appointment.patientEmail) {
+      const claimed = await prisma.appointment.updateMany({
+        where: { id: appointment.id, emailConfirmationSent: false },
+        data: { emailConfirmationSent: true },
+      })
+      if (claimed.count === 1) {
+        const result = await sendConfirmationEmail({
+          to: appointment.patientEmail,
+          patientName: appointment.patientName,
+          doctorName: doctor.name,
+          specialty: doctor.specialty.name,
+          date: appointment.date,
+          time: appointment.time,
+          durationMin: appointment.durationMin,
+        })
+        if (!result.success) {
+          console.error('[POST /api/public/appointments] Email falló:', result.error)
+          await prisma.appointment.update({
+            where: { id: appointment.id },
+            data: { emailConfirmationSent: false },
+          })
+        }
+      }
+    }
+
     return Response.json({ appointment }, { status: 201 })
   } catch (error) {
     if (error instanceof PrismaClientKnownRequestError && error.code === 'P2002') {

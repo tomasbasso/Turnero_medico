@@ -38,34 +38,41 @@ export function StepPatientForm({
   onSuccess: (appointment: { id: number }) => void
   onSlotTaken: () => void
 }) {
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  type FieldErrors = {
+    patientName?: string
+    patientDni?: string
+    patientPhone?: string
+    patientEmail?: string
+  }
 
-  function validate(): string | null {
+  const [loading, setLoading] = useState(false)
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({})
+  const [serverError, setServerError] = useState<string | null>(null)
+
+  function validate(): FieldErrors | null {
+    const errs: FieldErrors = {}
     const dniClean = patientDni.replace(/[\s.]/g, '')
-    if (!patientName.trim()) return 'Ingresá tu nombre completo.'
-    if (!dniClean) return 'Ingresá tu DNI.'
-    if (!/^\d{7,8}$/.test(dniClean)) return 'El DNI debe tener 7 u 8 dígitos numéricos.'
-    const phoneClean = patientPhone.replace(/\D/g, '')
-    if (!phoneClean) return 'Ingresá tu teléfono.'
-    if (phoneClean.length !== 10) return 'El teléfono debe tener exactamente 10 dígitos.'
+    if (!patientName.trim()) errs.patientName = 'Ingresá tu nombre completo.'
+    if (!dniClean) errs.patientDni = 'Ingresá tu DNI.'
+    else if (!/^\d{7,8}$/.test(dniClean)) errs.patientDni = 'El DNI debe tener 7 u 8 dígitos numéricos.'
+    if (!patientPhone.trim()) errs.patientPhone = 'Ingresá tu teléfono.'
     if (patientEmail.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(patientEmail.trim())) {
-      return 'Ingresá un email válido.'
+      errs.patientEmail = 'Ingresá un email válido.'
     }
-    return null
+    return Object.keys(errs).length > 0 ? errs : null
   }
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    const validationError = validate()
-    if (validationError) {
-      setError(validationError)
+    const errs = validate()
+    if (errs) {
+      setFieldErrors(errs)
       return
     }
-    setError(null)
+    setFieldErrors({})
+    setServerError(null)
     setLoading(true)
     const dniClean = patientDni.replace(/[\s.]/g, '')
-    const phoneClean = patientPhone.replace(/\D/g, '')
     fetch('/api/public/appointments', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -75,7 +82,7 @@ export function StepPatientForm({
         time: selectedTime,
         patientName: patientName.trim(),
         patientDni: dniClean,
-        patientPhone: phoneClean,
+        patientPhone: patientPhone.trim(),
         patientInsurance: patientInsurance.trim() || null,
         patientEmail: patientEmail.trim() || null,
       }),
@@ -85,12 +92,12 @@ export function StepPatientForm({
         if (ok) {
           onSuccess(data.appointment)
         } else if (status === 409) {
-          setError(data.error || 'Este turno ya fue reservado. Elegí otro horario.')
+          setServerError(data.error || 'Este turno ya fue reservado. Elegí otro horario.')
         } else {
-          setError('Ocurrió un error al reservar. Intentá nuevamente.')
+          setServerError('Ocurrió un error al reservar. Intentá nuevamente.')
         }
       })
-      .catch(() => setError('Ocurrió un error al reservar. Intentá nuevamente.'))
+      .catch(() => setServerError('Ocurrió un error al reservar. Intentá nuevamente.'))
       .finally(() => setLoading(false))
   }
 
@@ -113,11 +120,13 @@ export function StepPatientForm({
             type="text"
             id="patientName"
             value={patientName}
-            onChange={(e) => setPatientName(e.target.value)}
+            onChange={(e) => { setPatientName(e.target.value); setFieldErrors((prev) => ({ ...prev, patientName: undefined })) }}
             placeholder="Ej: María García"
-            required
-            className={inputClass}
+            className={cn(inputClass, fieldErrors.patientName && 'border-error')}
           />
+          {fieldErrors.patientName && (
+            <p className="text-xs text-error mt-1">{fieldErrors.patientName}</p>
+          )}
         </div>
 
         <div>
@@ -129,10 +138,13 @@ export function StepPatientForm({
             inputMode="numeric"
             id="patientDni"
             value={patientDni}
-            onChange={(e) => setPatientDni(e.target.value)}
+            onChange={(e) => { setPatientDni(e.target.value); setFieldErrors((prev) => ({ ...prev, patientDni: undefined })) }}
             placeholder="Ej: 35421789"
-            className={inputClass}
+            className={cn(inputClass, fieldErrors.patientDni && 'border-error')}
           />
+          {fieldErrors.patientDni && (
+            <p className="text-xs text-error mt-1">{fieldErrors.patientDni}</p>
+          )}
         </div>
 
         <div>
@@ -141,13 +153,15 @@ export function StepPatientForm({
           </label>
           <input
             type="tel"
-            inputMode="numeric"
             id="patientPhone"
             value={patientPhone}
-            onChange={(e) => setPatientPhone(e.target.value)}
+            onChange={(e) => { setPatientPhone(e.target.value); setFieldErrors((prev) => ({ ...prev, patientPhone: undefined })) }}
             placeholder="Ej: 2302587896"
-            className={inputClass}
+            className={cn(inputClass, fieldErrors.patientPhone && 'border-error')}
           />
+          {fieldErrors.patientPhone && (
+            <p className="text-xs text-error mt-1">{fieldErrors.patientPhone}</p>
+          )}
         </div>
 
         <div>
@@ -172,16 +186,19 @@ export function StepPatientForm({
             type="email"
             id="patientEmail"
             value={patientEmail}
-            onChange={(e) => setPatientEmail(e.target.value)}
+            onChange={(e) => { setPatientEmail(e.target.value); setFieldErrors((prev) => ({ ...prev, patientEmail: undefined })) }}
             placeholder="Ej: maria@gmail.com"
-            className={inputClass}
+            className={cn(inputClass, fieldErrors.patientEmail && 'border-error')}
           />
+          {fieldErrors.patientEmail && (
+            <p className="text-xs text-error mt-1">{fieldErrors.patientEmail}</p>
+          )}
         </div>
 
-        {error && (
+        {serverError && (
           <div role="alert" className="text-sm text-error bg-error/10 border border-error/20 rounded-lg px-4 py-3">
-            {error}
-            {error.includes('reservado') && (
+            {serverError}
+            {serverError.includes('reservado') && (
               <button
                 type="button"
                 onClick={onSlotTaken}

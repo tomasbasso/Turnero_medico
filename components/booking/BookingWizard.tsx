@@ -82,6 +82,16 @@ export function BookingWizard() {
               {step === 1 && (
                 <StepSpecialty
                   onSelect={(s) => {
+                    if (s.id !== selectedSpecialty?.id) {
+                      setSelectedDoctor(null)
+                      setSelectedDate(null)
+                      setSelectedTime(null)
+                      setPatientName('')
+                      setPatientDni('')
+                      setPatientPhone('')
+                      setPatientInsurance('')
+                      setPatientEmail('')
+                    }
                     setSelectedSpecialty(s)
                     goTo(2)
                   }}
@@ -92,6 +102,15 @@ export function BookingWizard() {
                   specialtyId={selectedSpecialty.id}
                   specialtyName={selectedSpecialty.name}
                   onSelect={(d) => {
+                    if (d.id !== selectedDoctor?.id) {
+                      setSelectedDate(null)
+                      setSelectedTime(null)
+                      setPatientName('')
+                      setPatientDni('')
+                      setPatientPhone('')
+                      setPatientInsurance('')
+                      setPatientEmail('')
+                    }
                     setSelectedDoctor(d)
                     goTo(3)
                   }}
@@ -133,7 +152,10 @@ export function BookingWizard() {
                     setConfirmedAppointment(appt)
                     goTo(5)
                   }}
-                  onSlotTaken={() => goTo(3)}
+                  onSlotTaken={() => {
+                    setSelectedTime(null)
+                    goTo(3)
+                  }}
                 />
               )}
               {step === 5 && selectedSpecialty && selectedDoctor && selectedDate && selectedTime && (

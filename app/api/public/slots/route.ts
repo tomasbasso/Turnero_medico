@@ -23,6 +23,19 @@ function timeToMin(t: string): number {
   return h * 60 + m
 }
 
+// Argentina is UTC-3 with no DST. Returns { dateStr: "YYYY-MM-DD", currentMin: number }.
+function getArgentineNow() {
+  const now = new Date()
+  const argNow = new Date(now.getTime() - 3 * 60 * 60 * 1000)
+  const y = argNow.getUTCFullYear()
+  const m = String(argNow.getUTCMonth() + 1).padStart(2, '0')
+  const d = String(argNow.getUTCDate()).padStart(2, '0')
+  return {
+    dateStr: `${y}-${m}-${d}`,
+    currentMin: argNow.getUTCHours() * 60 + argNow.getUTCMinutes(),
+  }
+}
+
 export async function GET(request: NextRequest) {
   const doctorIdStr = request.nextUrl.searchParams.get('doctorId')
   const dateStr = request.nextUrl.searchParams.get('date')
@@ -48,6 +61,9 @@ export async function GET(request: NextRequest) {
   if (targetDate < today || targetDate > maxDate) {
     return Response.json({ slots: [] })
   }
+
+  const argNow = getArgentineNow()
+  const isToday = dateStr === argNow.dateStr
 
   const dayOfWeek = targetDate.getDay()
 
@@ -91,12 +107,12 @@ export async function GET(request: NextRequest) {
       .flatMap((av) => generateSlots(av.startTime, av.endTime, doctor.durationMin))
       .map((slotTime) => {
         const tMin = timeToMin(slotTime)
-        const available = !existingAppointments.some((a) => {
+        const isPast = isToday && tMin <= argNow.currentMin
+        const booked = existingAppointments.some((a) => {
           const aMin = timeToMin(a.time)
-          // Overlap: existing appointment range [aMin, aMin+aDur) overlaps with [tMin, tMin+requestedDur)
           return aMin < tMin + requestedDur && aMin + a.durationMin > tMin
         })
-        return { time: slotTime, available }
+        return { time: slotTime, available: !isPast && !booked }
       })
       .sort((a, b) => a.time.localeCompare(b.time))
 

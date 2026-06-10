@@ -1,7 +1,7 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { ChevronLeft, ChevronRight, CalendarX } from 'lucide-react'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const BOOKING_WINDOW_DAYS = 30
@@ -36,7 +36,7 @@ export function StepDateTime({
   })
   const [slots, setSlots] = useState<Slot[]>([])
   const [loadingSlots, setLoadingSlots] = useState(false)
-  const [noAvailability, setNoAvailability] = useState(false)
+  const initialFetchDone = useRef(false)
 
   const maxDate = new Date(today)
   maxDate.setDate(today.getDate() + BOOKING_WINDOW_DAYS)
@@ -84,25 +84,28 @@ export function StepDateTime({
     return `${y}-${m}-${day}`
   }
 
-  function handleDayClick(ds: string) {
-    onDaySelect(ds)
+  function fetchSlots(ds: string) {
     setSlots([])
     setLoadingSlots(true)
-    setNoAvailability(false)
     fetch(`/api/public/slots?doctorId=${doctorId}&date=${ds}`)
       .then((r) => r.json())
-      .then((data) => {
-        const fetchedSlots: Slot[] = data.slots ?? []
-        setSlots(fetchedSlots)
-        if (fetchedSlots.length === 0 || fetchedSlots.every((s) => !s.available)) {
-          setNoAvailability(true)
-        }
-      })
-      .catch(() => {
-        setSlots([])
-        setNoAvailability(true)
-      })
+      .then((data) => setSlots(data.slots ?? []))
+      .catch(() => setSlots([]))
       .finally(() => setLoadingSlots(false))
+  }
+
+  // Auto-fetch slots when component mounts with a pre-selected date
+  // (handles going back from step 4, and refresh after 409 concurrency error)
+  useEffect(() => {
+    if (initialFetchDone.current || !selectedDate) return
+    initialFetchDone.current = true
+    fetchSlots(selectedDate)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  function handleDayClick(ds: string) {
+    onDaySelect(ds)
+    fetchSlots(ds)
   }
 
   const monthLabel = new Intl.DateTimeFormat('es-AR', {
@@ -217,50 +220,45 @@ export function StepDateTime({
           </div>
         )}
 
-        {selectedDate && noAvailability && !loadingSlots && (
-          <div className="flex flex-col items-center justify-center py-12 text-center gap-3">
-            <CalendarX className="h-10 w-10 text-text-muted" />
-            <h3 className="text-base font-semibold font-display text-text-primary">
-              Este médico no tiene turnos disponibles
-            </h3>
-            <p className="text-sm text-text-secondary">
-              No hay horarios disponibles en los próximos 30 días. Podés elegir otro médico.
-            </p>
-            <button
-              onClick={onBack}
-              className="mt-2 px-4 py-2 rounded-lg border border-[rgba(13,148,136,0.3)] text-primary text-sm font-semibold transition-all hover:bg-primary/5"
-            >
-              ← Elegir otro médico
-            </button>
-          </div>
+        {selectedDate && !loadingSlots && slots.length === 0 && (
+          <p className="text-sm text-text-secondary text-center py-6">
+            Sin horarios disponibles para este día.
+          </p>
         )}
 
         {selectedDate && slots.length > 0 && !loadingSlots && (
-          <AnimatePresence mode="wait">
-            <div key={selectedDate} className="grid grid-cols-4 gap-2 sm:grid-cols-5">
-              {slots.map((slot, i) => (
-                <motion.button
-                  key={slot.time}
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.2, ease: 'easeOut', delay: i * 0.03 }}
-                  disabled={!slot.available}
-                  onClick={slot.available ? () => onTimeSelect(slot.time) : undefined}
-                  aria-label={`${slot.time}${selectedTime === slot.time ? ', seleccionado' : slot.available ? ', disponible' : ', ocupado'}`}
-                  className={cn(
-                    'rounded-full px-3 py-2 text-sm font-semibold min-h-[44px] flex items-center justify-center transition-all duration-150',
-                    selectedTime === slot.time
-                      ? 'btn-primary'
-                      : slot.available
-                        ? 'border border-accent/40 text-primary bg-primary/10 cursor-pointer hover:bg-primary/20'
-                        : 'bg-background text-text-muted border border-border cursor-not-allowed opacity-60'
-                  )}
-                >
-                  {slot.time}
-                </motion.button>
-              ))}
-            </div>
-          </AnimatePresence>
+          <>
+            <AnimatePresence mode="wait">
+              <div key={selectedDate} className="grid grid-cols-4 gap-2 sm:grid-cols-5">
+                {slots.map((slot, i) => (
+                  <motion.button
+                    key={slot.time}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.2, ease: 'easeOut', delay: i * 0.03 }}
+                    disabled={!slot.available}
+                    onClick={slot.available ? () => onTimeSelect(slot.time) : undefined}
+                    aria-label={`${slot.time}${selectedTime === slot.time ? ', seleccionado' : slot.available ? ', disponible' : ', ocupado'}`}
+                    className={cn(
+                      'rounded-full px-3 py-2 text-sm font-semibold min-h-[44px] flex items-center justify-center transition-all duration-150',
+                      selectedTime === slot.time
+                        ? 'btn-primary'
+                        : slot.available
+                          ? 'border border-accent/40 text-primary bg-primary/10 cursor-pointer hover:bg-primary/20'
+                          : 'bg-background text-text-muted border border-border cursor-not-allowed opacity-60'
+                    )}
+                  >
+                    {slot.time}
+                  </motion.button>
+                ))}
+              </div>
+            </AnimatePresence>
+            {slots.every((s) => !s.available) && (
+              <p className="text-sm text-text-secondary text-center pt-3">
+                Sin horarios disponibles para este día.
+              </p>
+            )}
+          </>
         )}
       </div>
 

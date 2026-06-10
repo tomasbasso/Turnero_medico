@@ -5,11 +5,12 @@ import { X } from 'lucide-react'
 import FocusTrap from 'focus-trap-react'
 import { cn, formatTime } from '@/lib/utils'
 
+type Specialty = { id: number; name: string; color: string }
 type Doctor = { id: number; name: string; durationMin: number }
 type Slot = { time: string; available: boolean }
 
 interface NewAppointmentModalProps {
-  doctors: Doctor[]
+  doctors?: Doctor[]
   onCreated: () => void
   onClose: () => void
 }
@@ -22,7 +23,11 @@ function getDurationOptions(base: number): number[] {
   return [base, base * 2, base * 3]
 }
 
-export function NewAppointmentModal({ doctors, onCreated, onClose }: NewAppointmentModalProps) {
+export function NewAppointmentModal({ onCreated, onClose }: NewAppointmentModalProps) {
+  const [specialties, setSpecialties] = useState<Specialty[]>([])
+  const [specialtyId, setSpecialtyId] = useState<number | ''>('')
+  const [filteredDoctors, setFilteredDoctors] = useState<Doctor[]>([])
+  const [doctorsLoading, setDoctorsLoading] = useState(false)
   const [doctorId, setDoctorId] = useState<number | ''>('')
   const [date, setDate] = useState('')
   const [durationMin, setDurationMin] = useState<number>(20)
@@ -47,20 +52,43 @@ export function NewAppointmentModal({ doctors, onCreated, onClose }: NewAppointm
     return () => document.removeEventListener('keydown', handleEscape)
   }, [onClose])
 
+  // Fetch specialties on mount
+  useEffect(() => {
+    fetch('/api/public/specialties')
+      .then((r) => r.json())
+      .then((data) => setSpecialties(data.specialties ?? []))
+      .catch(() => {})
+  }, [])
+
+  // Fetch doctors when specialty changes
+  useEffect(() => {
+    if (specialtyId === '') {
+      setFilteredDoctors([])
+      setDoctorId('')
+      return
+    }
+    setDoctorsLoading(true)
+    setDoctorId('')
+    setTime(null)
+    fetch(`/api/public/doctors?specialtyId=${specialtyId}`)
+      .then((r) => r.json())
+      .then((data) => setFilteredDoctors(data.doctors ?? []))
+      .catch(() => setFilteredDoctors([]))
+      .finally(() => setDoctorsLoading(false))
+  }, [specialtyId])
+
   // When doctor changes, reset duration to the doctor's native slot size
   useEffect(() => {
     if (doctorId === '') return
-    const doctor = doctors.find((d) => d.id === doctorId)
+    const doctor = filteredDoctors.find((d) => d.id === doctorId)
     if (doctor) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setDurationMin(doctor.durationMin)
     }
-  }, [doctorId, doctors])
+  }, [doctorId, filteredDoctors])
 
   // Fetch slots when doctor, date, or duration changes
   useEffect(() => {
     if (!doctorId || !date) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSlots([])
       return
     }
@@ -142,25 +170,54 @@ export function NewAppointmentModal({ doctors, onCreated, onClose }: NewAppointm
           </div>
 
           <form onSubmit={handleSubmit} className="px-6 py-5 space-y-4">
-            {/* Doctor */}
+            {/* Especialidad */}
             <div>
-              <label className="block text-xs font-semibold text-text-secondary mb-1">Doctor</label>
+              <label className="block text-xs font-semibold text-text-secondary mb-1">Especialidad</label>
               <select
                 className={inputClass}
-                value={doctorId}
-                onChange={(e) => {
-                  setDoctorId(e.target.value ? Number(e.target.value) : '')
-                  setTime(null)
-                }}
+                value={specialtyId}
+                onChange={(e) => setSpecialtyId(e.target.value ? Number(e.target.value) : '')}
                 required
               >
-                <option value="">Seleccioná un doctor</option>
-                {doctors.map((d) => (
-                  <option key={d.id} value={d.id}>
-                    {d.name}
+                <option value="">Seleccioná una especialidad</option>
+                {specialties.map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.name}
                   </option>
                 ))}
               </select>
+            </div>
+
+            {/* Doctor */}
+            <div>
+              <label className="block text-xs font-semibold text-text-secondary mb-1">Doctor</label>
+              {doctorsLoading ? (
+                <p className="text-sm text-text-muted italic">Cargando médicos...</p>
+              ) : (
+                <select
+                  className={inputClass}
+                  value={doctorId}
+                  onChange={(e) => {
+                    setDoctorId(e.target.value ? Number(e.target.value) : '')
+                    setTime(null)
+                  }}
+                  disabled={!specialtyId || filteredDoctors.length === 0}
+                  required
+                >
+                  <option value="">
+                    {!specialtyId
+                      ? 'Primero elegí una especialidad'
+                      : filteredDoctors.length === 0
+                        ? 'Sin médicos para esta especialidad'
+                        : 'Seleccioná un doctor'}
+                  </option>
+                  {filteredDoctors.map((d) => (
+                    <option key={d.id} value={d.id}>
+                      {d.name}
+                    </option>
+                  ))}
+                </select>
+              )}
             </div>
 
             {/* Fecha */}
@@ -183,7 +240,7 @@ export function NewAppointmentModal({ doctors, onCreated, onClose }: NewAppointm
               <label className="block text-xs font-semibold text-text-secondary mb-1">Duración</label>
               <div className="flex gap-2">
                 {getDurationOptions(
-                  doctors.find((d) => d.id === doctorId)?.durationMin ?? 20
+                  filteredDoctors.find((d) => d.id === doctorId)?.durationMin ?? 20
                 ).map((opt) => (
                   <button
                     key={opt}
